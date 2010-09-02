@@ -1,23 +1,25 @@
-//
-//   audio.c
-//
-//   Copyright 2007, 2008 Lancer-X/ASCEAI
-//
-//   This file is part of Meritous.
-//
-//   Meritous is free software: you can redistribute it and/or modify
-//   it under the terms of the GNU General Public License as published by
-//   the Free Software Foundation, either version 3 of the License, or
-//   (at your option) any later version.
-//
-//   Meritous is distributed in the hope that it will be useful,
-//   but WITHOUT ANY WARRANTY; without even the implied warranty of
-//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//   GNU General Public License for more details.
-//
-//   You should have received a copy of the GNU General Public License
-//   along with Meritous.  If not, see <http://www.gnu.org/licenses/>.
-//
+/**************************************************************************
+ *  audio.c                                                               *
+ *                                                                        *
+ *  Copyright 2007, 2008 Lancer-X/ASCEAI                                  *
+ *  Copyright 2010       CaptainHayashi etc.                              *
+ *                                                                        *
+ *  This file is part of eMeritous.                                       *
+ *                                                                        *
+ *  eMeritous is free software: you can redistribute it and/or modify     *
+ *  it under the terms of the GNU General Public License as published by  *
+ *  the Free Software Foundation, either version 3 of the License, or     *
+ *  (at your option) any later version.                                   *
+ *                                                                        *
+ *  eMeritous is distributed in the hope that it will be useful,          *
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *  GNU General Public License for more details.                          *
+ *                                                                        *
+ *  You should have received a copy of the GNU General Public License     *
+ *  along with eMeritous.  If not, see <http://www.gnu.org/licenses/>.    *
+ *                                                                        *
+ **************************************************************************/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -32,19 +34,19 @@
 #include "mapgen.h"
 #include "boss.h"
 
-char *tracks[13] = {"dat/m/ICEFRONT.S3M",
-                    "dat/m/cavern.xm",
-                    "dat/m/cave.xm",
-                    "dat/m/cave06.s3m",
-                    "dat/m/Wood.s3m",
-                    "dat/m/iller_knarkloader_final.xm",
-                    "dat/m/fear2.mod",
-                    "dat/m/Cv_boss.mod",
-                    "dat/m/Fr_boss.mod",
-                    "dat/m/CT_BOSS.MOD",
-                    "dat/m/rpg_bat1.xm",
-                    "dat/m/amblight.xm",
-                    "dat/m/FINALBAT.s3m"};
+char *tracks[13] = {"ICEFRONT.S3M",
+                    "cavern.xm",
+                    "cave.xm",
+                    "cave06.s3m",
+                    "Wood.s3m",
+                    "iller_knarkloader_final.xm",
+                    "fear2.mod",
+                    "Cv_boss.mod",
+                    "Fr_boss.mod",
+                    "CT_BOSS.MOD",
+                    "rpg_bat1.xm",
+                    "amblight.xm",
+                    "FINALBAT.s3m"};
 
 Mix_Music *bgm_music = NULL;
 int bgm_track = -1;
@@ -109,6 +111,60 @@ void CircuitHum()
   Mix_Volume(0, hum_vol);
 }
 
+/* The following code is from the Debian patch set.
+   Until I can find a better place to put this acknowledgment, 
+   be it known that this code was mostly written by Dylan R. E. Moonfire. */
+ 
+int IsBackgroundMusicFile(char *buffer, int track)
+{
+  FILE *fp;
+
+  /* Figure out the filename */
+  sprintf(buffer, "dat/m/%s",
+          tracks[track]);
+
+  printf("%s", buffer);
+
+  /* See if the file exists */
+  if ((fp = fopen(buffer, "rb")) != NULL) {
+    fclose(fp);
+    return 1;
+  }
+  return 0;
+}
+
+void PlayBackgroundMusic(int track)
+{
+  /* Setup variables */
+  char filename[64];
+  int found_track = 0;
+
+  /* See if we have a file of the appropriate type. */
+  found_track = IsBackgroundMusicFile(filename, track);
+
+#if 0
+  if (!found_track)
+    found_track = IsBackgroundMusicFile(filename, track, "ogg");
+  if (!found_track)
+    found_track = IsBackgroundMusicFile(filename, track, "mp3");
+  if (!found_track)
+    found_track = IsBackgroundMusicFile(filename, track, "s3m");
+  if (!found_track)
+    found_track = IsBackgroundMusicFile(filename, track, "xm");
+  if (!found_track)
+    found_track = IsBackgroundMusicFile(filename, track, "mod");
+#endif
+
+  /* Play the selected music */
+  if (found_track) {
+    bgm_music = Mix_LoadMUS(filename);
+    Mix_PlayMusic(bgm_music, -1);
+  }
+
+  /* Always save the track to reduce load */
+  bgm_track = track;
+}
+
 void TitleScreenMusic()
 {
   int new_track = 5;
@@ -121,6 +177,7 @@ void TitleScreenMusic()
   bgm_music = Mix_LoadMUS(tracks[new_track]);
   Mix_PlayMusic(bgm_music, -1);	
   bgm_track = new_track;
+  PlayBackgroundMusic(new_track);
 }
 
 void BackgroundMusic()
@@ -192,8 +249,7 @@ void BackgroundMusic()
     bgm_music = NULL;
   }
   if (new_track != -1) {
-    bgm_music = Mix_LoadMUS(tracks[new_track]);
-    Mix_PlayMusic(bgm_music, -1);
+    PlayBackgroundMusic(new_track);
   }
   bgm_track = new_track;
 }
