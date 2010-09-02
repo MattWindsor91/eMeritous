@@ -29,24 +29,29 @@
 #include <SDL_mixer.h>
 #include <string.h>
 
+#include "filepaths.h"
 #include "player.h"
 #include "levelblit.h"
 #include "mapgen.h"
 #include "boss.h"
 
-char *tracks[13] = {"ICEFRONT.S3M",
-                    "cavern.xm",
-                    "cave.xm",
-                    "cave06.s3m",
-                    "Wood.s3m",
-                    "iller_knarkloader_final.xm",
-                    "fear2.mod",
-                    "Cv_boss.mod",
-                    "Fr_boss.mod",
-                    "CT_BOSS.MOD",
-                    "rpg_bat1.xm",
-                    "amblight.xm",
-                    "FINALBAT.s3m"};
+const char *tracks[13] = {"ICEFRONT.S3M",
+                          "cavern.xm",
+                          "cave.xm",
+                          "cave06.s3m",
+                          "Wood.s3m",
+                          "iller_knarkloader_final.xm",
+                          "fear2.mod",
+                          "Cv_boss.mod",
+                          "Fr_boss.mod",
+                          "CT_BOSS.MOD",
+                          "rpg_bat1.xm",
+                          "amblight.xm",
+                          "FINALBAT.s3m"};
+
+const char SND_CIRCUIT_CHARGE[]  = "circuitcharge.wav";
+const char SND_CIRCUIT_RECOVER[] = "circuitrecover.wav";
+const char SND_CIRCUIT_RELEASE[] = "circuitrelease.wav";
 
 Mix_Music *bgm_music = NULL;
 int bgm_track = -1;
@@ -67,6 +72,22 @@ void MusicUpdate()
 {
   BackgroundMusic();
   CircuitHum();
+}
+
+void SND_Play_Channel(const char *filename, int vol, int ch, int loops)
+{
+  char buffer[FN_BUFFER_LEN] = "\0";
+
+  strcat(buffer, PREFIX);
+  strcat(buffer, RES_DIR);
+  strcat(buffer, AUDIO_DIR);
+  strcat(buffer, filename);
+
+  printf("%s\n", buffer);
+
+  c_sample[ch] = Mix_LoadWAV(buffer);
+  Mix_Volume(ch, vol);
+  Mix_PlayChannel(ch, c_sample[ch], loops);
 }
 
 void CircuitHum()
@@ -90,8 +111,7 @@ void CircuitHum()
         Mix_HaltChannel(0);
         Mix_FreeChunk(c_sample[0]);
       }
-      c_sample[0] = Mix_LoadWAV("dat/a/circuitcharge.wav");
-      Mix_PlayChannel(0, c_sample[0], -1);
+      SND_Play_Channel(SND_CIRCUIT_CHARGE, hum_vol, 0, -1);
       hum_play = 1;
     }
   }
@@ -102,9 +122,10 @@ void CircuitHum()
         Mix_HaltChannel(0);
         Mix_FreeChunk(c_sample[0]);
       }
-      c_sample[0] = Mix_LoadWAV("dat/a/circuitrecover.wav");
-      Mix_PlayChannel(0, c_sample[0], -1);
+      SND_Play_Channel(SND_CIRCUIT_RECOVER, hum_vol, 0, -1);
       hum_play = 2;
+      /*Mix_PlayChannel(0, c_sample[0], -1);
+        hum_play = 2;*/
     }
   }
 	
@@ -254,7 +275,7 @@ void BackgroundMusic()
   bgm_track = new_track;
 }
 
-int SND_GetChannel()
+int SND_GetChannel(void)
 {
   int i;
 	
@@ -270,19 +291,17 @@ int SND_GetChannel()
   return -1;
 }
 
-void SND_Play(char *filename, int vol)
+void SND_Play(const char *filename, int vol)
 {
   int ch;
 		
   ch = SND_GetChannel();
   if (ch != -1) {
-    c_sample[ch] = Mix_LoadWAV(filename);
-    Mix_Volume(ch, vol);
-    Mix_PlayChannel(ch, c_sample[ch], 0);
+    SND_Play_Channel(filename, vol, ch, 0);
   }
 }
 
-void SND_Pos(char *filename, int vol, int dist)
+void SND_Pos(const char *filename, int vol, int dist)
 {
   int real_vol;
   if (dist > 1600) return;
@@ -293,5 +312,5 @@ void SND_Pos(char *filename, int vol, int dist)
 
 void SND_CircuitRelease(int str)
 {
-  SND_Play("dat/a/circuitrelease.wav", sqrt(str * 2 + (str * 5300 / circuit_size) + (str > 100 ? 5300 : str*53)));
+  SND_Play(SND_CIRCUIT_RELEASE, sqrt(str * 2 + (str * 5300 / circuit_size) + (str > 100 ? 5300 : str*53)));
 }
