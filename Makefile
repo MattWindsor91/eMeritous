@@ -45,7 +45,7 @@ default:	emeritous
 %.o:		%.c
 		${CC} -c $< -o $@ ${CCFLAGS}
 
-meritous:	${OBJS}
+emeritous:	${OBJS}
 		${CC} -o $@ $+ ${LDFLAGS}
 
 clean:		
