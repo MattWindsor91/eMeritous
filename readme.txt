@@ -1,6 +1,9 @@
-MERITOUS v 1.2
-for Windows 98/2K/XP/other operating systems
-by Lancer-X/ASCEAI
+eMERITOUS v 1.2a
+
+Meritous by Lancer-X/ASCEAI
+eMeritous fork by contributors
+
+--
 
 Far below the surface of the planet is a secret.     
 A place of limitless power. Those that seek to
@@ -14,7 +17,9 @@ Dome in search of answers.
 
 INSTALLATION:
 
-Run Meritous.exe after extraction and everything should work correctly.
+- Compile with the Makefile (change CC to your preferred C compiler.)
+
+- Make install is not ready yet, but should be in later builds.
 
 If the game is too difficult for you, you can play in 'Wuss mode' for
 a far more sombre gaming experience.
@@ -43,11 +48,14 @@ P          - Pause the game.
 
 COMMENTS:
 
-You can send comments/questions/whatever to my email address, which is
-given on the website.
+Send comments/questions/whatever specific to this fork to my email address, 
+mattwindsor ${COMMERCIAL_AT} btinternet ${FULL_STOP} com.
+
+Anything relating to the original Meritous should NOT go to me, but to 
+Lancer-X/ASCEAI. (The converse applies for eMeritous peculiarities)
 
 
 ACKNOWLEDGEMENTS:
 
-Thanks to my beta testers: Quasar, Terryn and Wervyn, for their hard work
-in assisting me in keeping Meritous fairly stable.
+Thanks to the Meritous beta testers: Quasar, Terryn and Wervyn, for their hard 
+work in assisting in keeping Meritous fairly stable.
