@@ -145,11 +145,6 @@ int UpgradePrice(int t);
 
 
 void ScrollTo(int x, int y);
-#define K_UP 0
-#define K_DN 1
-#define K_LT 2
-#define K_RT 3
-#define K_SP 4
 
 SDL_Surface *screen;
 
