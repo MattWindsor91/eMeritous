@@ -124,8 +124,6 @@ void CircuitHum()
       }
       SND_Play_Channel(SND_CIRCUIT_RECOVER, hum_vol, 0, -1);
       hum_play = 2;
-      /*Mix_PlayChannel(0, c_sample[0], -1);
-        hum_play = 2;*/
     }
   }
 	

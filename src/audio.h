@@ -30,4 +30,10 @@ void TitleScreenMusic();
 void SND_CircuitRelease(int str);
 void SND_Pos(char *filename, int vol, int dist);
 
+/* Sound file names */
+
+extern const char SND_CIRCUIT_CHARGE[];  /**< Circuit charge sound. */
+extern const char SND_CIRCUIT_RECOVER[]; /**< Circuit recover sound. */
+extern const char SND_CIRCUIT_RELEASE[]; /**< Circuit release sound. */
+
 #endif /* __AUDIO_H__ */
