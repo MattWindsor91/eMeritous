@@ -20,7 +20,7 @@
 #   along with eMeritous.  If not, see <http://www.gnu.org/licenses/>.
 #
 LDFLAGS = `sdl-config --libs` -lSDL_image -lSDL_mixer -lz
-CCFLAGS = -O2 -Wall `sdl-config --cflags` -g -pedantic -DDEBUG_STATS -ansi
+CCFLAGS = -O2 -Wall `sdl-config --cflags` -g -pedantic -DDEBUG_STATS -DNO_LOGO -ansi
 CC      = clang
 #
 OBJS = 	src/main.o \
