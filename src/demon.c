@@ -1103,11 +1103,11 @@ int FollowPlayer(struct enemy *e, struct RoomConnection **rcon)
     follow = follow->n;
   }
 	
-  // Recursively follow the player, to a certain depth
+  /* Recursively follow the player, to a certain depth */
   follow = rooms[e->room].con;
   csearch = rand();
 	
-  // Are we already following the player into a room?
+  /* Are we already following the player into a room? */
 	
   /*if (e->curr_follow != -1) {
   // See if this room is the best FIRST
@@ -1165,7 +1165,7 @@ void KillEnemy(struct enemy *t)
   ct = SDL_GetTicks();
 	
   if ((ct - lastkill) > 100) {
-    SND_Pos("dat/a/enemyhit.wav", 128, PlayerDist(t->x, t->y));
+    SND_Pos(SND_ENEMY_HIT, 128, PlayerDist(t->x, t->y));
     lastkill = ct;
   }
 	
@@ -1225,6 +1225,7 @@ void ArtifactRoomUnlock(int room)
 
 void EnemySound(int t, int dist)
 {
+  char fn[FN_BUFFER_LEN];
   static int last_e_sound = 0;
   static int last_delay = 150;
   int curr_e_sound = SDL_GetTicks();
@@ -1232,57 +1233,11 @@ void EnemySound(int t, int dist)
   if ((curr_e_sound - last_delay) < last_e_sound) {
     return;
   }
-	
-  switch (t) {
-  case 0:
-    SND_Pos("dat/a/mons0shot.wav", 48, dist);
-    last_delay = 200;
-    break;
-  case 1:
-    SND_Pos("dat/a/mons1shot.wav", 112, dist);
-    last_delay = 500;
-    break;
-  case 2:
-    SND_Pos("dat/a/mons2shot.wav", 110, dist);
-    last_delay = 1000;
-    break;
-  case 3:
-    SND_Pos("dat/a/mons3shot.wav", 110, dist);
-    last_delay = 500;
-    break;
-  case 4:
-    SND_Pos("dat/a/mons4shot.wav", 110, dist);
-    last_delay = 900;
-    break;
-  case 5:
-    SND_Pos("dat/a/mons5shot.wav", 80, dist);
-    last_delay = 60;
-    break;
-  case 6:
-    SND_Pos("dat/a/mons6shot.wav", 110, dist);
-    last_delay = 1000;
-    break;
-  case 7:
-    SND_Pos("dat/a/mons7shot.wav", 110, dist);
-    last_delay = 600;
-    break;
-  case 8:
-    SND_Pos("dat/a/mons8shot.wav", 110, dist);
-    last_delay = 700;
-    break;
-  case 9:
-    SND_Pos("dat/a/mons9shot.wav", 110, dist);
-    last_delay = 242;
-    break;
-  case 10:
-    SND_Pos("dat/a/mons10shot.wav", 110, dist);
-    last_delay = 250;
-    break;
-		
-		
-  default:
-    break;
-  }
+
+  sprintf(fn, SNDF_ENEMY_SHOT, t);
+
+  SND_Pos(fn, ENEMY_SND_VOLS[t], dist);
+  last_delay = ENEMY_SND_DELAYS[t];
 	
   last_e_sound = curr_e_sound;
 }

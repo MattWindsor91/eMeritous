@@ -29,11 +29,36 @@
 #include <SDL_mixer.h>
 #include <string.h>
 
+#include "audio.h"
 #include "filepaths.h"
 #include "player.h"
 #include "levelblit.h"
 #include "mapgen.h"
 #include "boss.h"
+
+const int ENEMY_SND_VOLS[11] = {48, 
+                                112,
+                                110,
+                                110,
+                                110,
+                                80,
+                                110,
+                                110,
+                                110,
+                                110,
+                                110};
+
+const int ENEMY_SND_DELAYS[11] = {200, 
+                                  500,
+                                  1000,
+                                  500,
+                                  900,
+                                  60,
+                                  1000,
+                                  600,
+                                  700,
+                                  242,
+                                  250};
 
 const char *tracks[13] = {"ICEFRONT.S3M",
                           "cavern.xm",
@@ -52,6 +77,9 @@ const char *tracks[13] = {"ICEFRONT.S3M",
 const char SND_CIRCUIT_CHARGE[]  = "circuitcharge.wav";
 const char SND_CIRCUIT_RECOVER[] = "circuitrecover.wav";
 const char SND_CIRCUIT_RELEASE[] = "circuitrelease.wav";
+
+const char SND_ENEMY_HIT[] = "enemyhit.wav";
+const char SNDF_ENEMY_SHOT[] = "mons%ushot.wav";
 
 Mix_Music *bgm_music = NULL;
 int bgm_track = -1;
