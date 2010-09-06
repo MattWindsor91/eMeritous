@@ -304,7 +304,7 @@ struct dlg_box dtext[5][12] =
       }
     },
   
-    { // Wervyn Anixil???? (with Agate Knife)
+    { /* Wervyn Anixil???? (with Agate Knife) */
       {1, 8, 0,
        "MERIT:\n"
        "  \n"
@@ -592,7 +592,7 @@ void DrawBossHP(int bar_length)
   DrawRect(21, 33, draw_amt, 7, draw_col);
 	
 	
-  /** Final boss's name changes if the player has the Agate Knife. */
+  /* Final boss's name changes if the player has the Agate Knife. */
   if ((current_boss == BOSS_FINAL) && (player.has_agate_knife)) {
     draw_text(22, 33, "??????????????", 0);
   } else {
@@ -760,7 +760,7 @@ void DrawBoss()
     new_dir += (float)(rand() % 16) / 128.0;
     new_dir -= (float)(rand() % 16) / 128.0;
 			
-    // Check new dists
+    /* Check new dists */
     check_pass = 1;
     for (i = 0; i < heads; i++) {
       mx = boss_x + cos(new_dir + h_dist * i) * new_dst;
@@ -775,14 +775,14 @@ void DrawBoss()
       boss_2h_dir = new_dir;
     }
 			
-    // Heads
+    /* Heads */
 			
     for (i = 0; i < heads; i++) {
       hx[i] = boss_x + cos(boss_2h_dir + h_dist * i) * boss_2h_dst;
       hy[i] = boss_y + sin(boss_2h_dir + h_dist * i) * boss_2h_dst;
     }
 			
-    // Membranes
+    /* Membranes */
     for (j = 0; j < heads; j++) {
       for (i = 0; i < 5; i++) {
         mx = hx[j] + (hx[(j+1)%heads] - hx[j]) * i / 4;
@@ -800,7 +800,7 @@ void DrawBoss()
       }
     }
 			
-    // Draw heads
+    /* Draw heads */
 			
     for (i = 0; i < heads; i++) {	
       drawpos.x = hx[i] - 16 - scroll_x;
@@ -826,7 +826,7 @@ void DrawBoss()
     boss_m_heads = boss_lives;
 			
     DrawCircleEx(boss_x - scroll_x, boss_y - scroll_y, 48, 0, 0 ^ flash_coeff);
-    // Draw appendages
+    /* Draw appendages */
     for (i = 0; i < boss_m_heads; i++) {
       mx = boss_x;
       my = boss_y;
@@ -834,7 +834,7 @@ void DrawBoss()
 						
       while (dist(mx, my, boss_m_hx[i], boss_m_hy[i]) > 12) {
         md = CHDir(md, PDir(mx, my, boss_m_hx[i], boss_m_hy[i]), 0.5);
-        //md = PDir(mx, my, boss_m_hx[i], boss_m_hy[i]);
+        /* md = PDir(mx, my, boss_m_hx[i], boss_m_hy[i]); */
         mx += cos(md) * 12;
         my += sin(md) * 12;
 
@@ -851,7 +851,7 @@ void DrawBoss()
 						
       while (dist(mx, my, boss_m_hx[i], boss_m_hy[i]) > 12) {
         md = CHDir(md, PDir(mx, my, boss_m_hx[i], boss_m_hy[i]), 0.5);
-        //md = PDir(mx, my, boss_m_hx[i], boss_m_hy[i]);
+        /* md = PDir(mx, my, boss_m_hx[i], boss_m_hy[i]); */
         mx += cos(md) * 12;
         my += sin(md) * 12;
         drawfrom.x = 32;
@@ -864,7 +864,7 @@ void DrawBoss()
         SDL_BlitSurface(boss_spr, &drawfrom, screen, &drawpos);
       }
     }
-    // Draw heads
+    /* Draw heads */
     drawfrom.x = 0;
     drawfrom.y = 32 * (flash_coeff > 0);
     drawfrom.w = 32;
@@ -875,7 +875,7 @@ void DrawBoss()
       SDL_BlitSurface(boss_spr, &drawfrom, screen, &drawpos);
     }
 			
-    // Draw core
+    /* Draw core */
     for (i = 0; i < boss_m_heads; i++) {
       drawpos.x = boss_x - 16 - scroll_x;
       drawpos.y = boss_y - 16 - scroll_y;
@@ -893,7 +893,7 @@ void DrawBoss()
       SDL_SetColorKey(boss_spr, SDL_SRCCOLORKEY | SDL_RLEACCEL, 0);
     }
 			
-    // Aura
+    /* Aura */
 			
     DrawCircleEx(boss_x - scroll_x, boss_y - scroll_y, 64+rand()%4, 0, (192+rand()%64) ^ flash_coeff);
     DrawCircleEx(boss_x - scroll_x, boss_y - scroll_y, 48+rand()%4, 0, (rand()%64) ^ flash_coeff);
@@ -1071,7 +1071,7 @@ void BC_BossCombat()
     heads = 5 - boss_lives;
     h_dist = M_PI * 2 / heads;
 			
-    // Heads
+    /* Heads */
 			
     for (i = 0; i < heads; i++) {
       hx[i] = boss_x + cos(boss_2h_dir + h_dist * i) * boss_2h_dst;
@@ -1084,7 +1084,7 @@ void BC_BossCombat()
     move_x += pdir_x * (2 + (3 - boss_lives)/2);
     move_y += pdir_y * (2 + (3 - boss_lives)/2);
 			
-    // Check movement
+    /* Check movement */
     check_pass = 1;
     for (i = 0; i < heads; i++) {
       mx = move_x + cos(boss_2h_dir + h_dist * i) * boss_2h_dst;
@@ -1101,7 +1101,7 @@ void BC_BossCombat()
 			
     if (boss_flash > 30) return;
 			
-    // Main cannons
+    /* Main cannons */
     if ((t % (10 + boss_lives * 6)) == 1) {
       i = (t / (10 + boss_lives * 6)) % heads;
       for (j = 0; j < player.reflect_shield / 2 + 1; j++) {
@@ -1110,19 +1110,19 @@ void BC_BossCombat()
       SpawnBullet(hx[i], hy[i], 4, pdir, 10, 0);
     }
 			
-    // Barrage launcher
+    /* Barrage launcher */
     for (i = 0; i < player.reflect_shield / 4 + heads; i++) {
       SpawnBullet(boss_x, boss_y, 0, RandomDir(), 3 + (float)(rand()%16)/10.0, 0);
     }
 			
     if (boss_lives == 2) {
-      // Splitters
+      /* Splitters */
       if ((t % 20) == 1) {
         SpawnBullet(boss_x, boss_y, 5, pdir, 5, 0);
       }
     }
 			
-    // Central laser cannon
+    /* Central laser cannon */
 			
     if ((t % (100 + boss_lives * 50)) == ((100 + boss_lives * 50)-1)) {
       i = player.reflect_shield / 3 + 2;
@@ -1132,7 +1132,7 @@ void BC_BossCombat()
       }
     }
 			
-    // Star vomit
+    /* Star vomit */
 			
     if (boss_lives == 2) {
       for (i = 0; i < heads; i++) {
@@ -1142,7 +1142,7 @@ void BC_BossCombat()
       }
     }
 			
-    // Fusion cannon
+    /* Fusion cannon */
 			
     if (boss_lives <= 2) {
       if ((t % (12 + (boss_lives - 1) * 30)) == 9) {
@@ -1227,7 +1227,7 @@ void BC_BossCombat()
       md = CHDir(RandomDir(), PlayerDir(boss_m_hx[0], boss_m_hy[0]), 1.5);
       SpawnBullet(boss_m_hx[0] + cos(boss_m_hd[0])*8, boss_m_hy[0] + sin(boss_m_hd[0])*8, 0, md, 10, 0);
     }
-    // Barrage
+    /* Barrage */
 			
     for (i = 0; i < 24; i++) {
       if ((t2 % (6 - (player.reflect_shield / 6) + boss_m_heads)) == 0) {
@@ -1246,7 +1246,7 @@ void BC_BossCombat()
       t2++;
     }
 			
-    // Beams
+    /* Beams */
     if (boss_m_heads < 4) {
       if ((t % 5) == 0) {
         i = (t / 5)%boss_m_heads;
@@ -1358,7 +1358,7 @@ void BC_BossCombat()
 				
         switch (npattern) {
         case 0:
-          // Spirally pattern
+          /* Spirally pattern */
           for (i = 0; i < 4; i++) {
             firedir = M_PI / 2 * (float)i + (float)t / 33.0 * M_PI;
             SpawnBullet(boss_x + cos(firedir)*12, boss_y + sin(firedir)*12, 0, firedir, 5, 0);
@@ -1373,7 +1373,7 @@ void BC_BossCombat()
           }
           break;
         case 1:
-          // Proxies
+          /* Proxies */
           if ((t % 100) < 80) {
             for (i = 0; i < 6; i++) {
               firedir = RandomDir();
@@ -1393,7 +1393,7 @@ void BC_BossCombat()
           }
           break;
         case 2:
-          // Laserwalls
+          /* Laserwalls */
           if ((t % 4) == 2) {
             firedir = cboss_dir + (float)t / 33.0 * M_PI;
             SpawnBullet(boss_x + cos(firedir)*12, boss_y + sin(firedir)*12, 8, firedir, 10, 1);
@@ -1569,7 +1569,7 @@ void BC_BossDying()
 		
     CullEnemies(4);
 		
-    // unlock doors
+    /* unlock doors */
 		
     for (y = 0; y < rooms[player_room].h; y++) {
       for (x = 0; x < rooms[player_room].w; x++) {
@@ -1735,7 +1735,7 @@ void BC_NewLife()
 void BossControl()
 {
   if ((player_room != current_boss_room)) {
-    // Player left, so roll back the boss
+    /* Player left, so roll back the boss */
     resetboss = 0;
     current_boss_room = 0;
     boss_tail_len = 0;
