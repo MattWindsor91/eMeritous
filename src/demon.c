@@ -1025,7 +1025,7 @@ int CanEnterRoom(int room)
   if (rooms[room].room_type == 5) return 0;
   if (rooms[room].room_type == 6) return 0;
 
-  if (artifacts[11]) {
+  if (artifacts[ART_CURSED_SEAL]) {
     if (rooms[room].enemies > 3) {
       return 0;
     }
@@ -2083,7 +2083,7 @@ void DrawEntities()
   }
 	
   /* Draw invisible enemies (if possible) */
-  if (artifacts[6]) {
+  if (artifacts[ART_ETHEREAL_MONOCLE]) {
     /* Draw the actives */
     t = active_stack;
     while (t != NULL) {
@@ -2096,7 +2096,7 @@ void DrawEntities()
       t = t->next_active;
     }
     /* Draw the inactives */
-    if (!artifacts[11]) {
+    if (!artifacts[ART_CURSED_SEAL]) {
       els = GetEnemyLoc(scroll_x, scroll_y);
       while (els != NULL) {
         t = els->e;
@@ -2140,7 +2140,7 @@ void MoveEntities()
     /* gem stuff */
     g = room_gems[player_room];
     while (g != NULL) {
-      if ((g->room == player_room)&&(g->delete_me == 0)) {
+      if ((g->room == player_room) && (g->delete_me == 0)) {
         if (artifacts[ART_CRYSTAL_SUMMONER]) {
           g->x += (player.x+4 - g->x)/10;
           g->y += (player.y+12 - g->y)/10;
@@ -2348,7 +2348,7 @@ void CrystalSummon()
 
   g = gem_stack;
 	
-  for (i = 0; i < 3000; i++) {
+  for (i = 0; i < NUM_ROOMS; i++) {
     room_gems[i] = NULL;
   }
 	
@@ -2499,13 +2499,13 @@ void SoupUpEnemies()
 
 void CurseSingleEnemy(struct enemy *e)
 {
-  static int ActiveRooms[3000];
+  static int ActiveRooms[NUM_ROOMS];
   static int NActiveRooms = 0;
   int i;
   int rm;
 	
   if (NActiveRooms == 0) {
-    for (i = 0; i < 3000; i++) {
+    for (i = 0; i < NUM_ROOMS; i++) {
       if ((rooms[i].room_type == 0) || (rooms[i].room_type == 4)) {
         ActiveRooms[NActiveRooms++] = i;
       }
@@ -2517,8 +2517,9 @@ void CurseSingleEnemy(struct enemy *e)
     rm = ActiveRooms[rand()%NActiveRooms];
   }
 
-  e->x = rooms[rm].w * 16 + rooms[rm].x * 32;
-  e->y = rooms[rm].h * 16 + rooms[rm].y * 32;
+  /* Get room centre? */
+  e->x = rooms[rm].w * TILE_W / 2 + rooms[rm].x * TILE_W;
+  e->y = rooms[rm].h * TILE_H / 2 + rooms[rm].y * TILE_W;
   rooms[e->room].enemies--;
   e->room = rm;
   rooms[e->room].enemies++;

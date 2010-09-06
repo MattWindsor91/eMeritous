@@ -31,6 +31,9 @@ enum {
   SCREEN_W = 640, /**< Screen width. */
   SCREEN_H = 480, /**< Screen height. */
 
+  TILE_W = 32,    /**< Width of one tile. */
+  TILE_H = 32,    /**< Height of one tile. */
+
   PLAYER_W = 16,  /**< Width of player sprite. */
   PLAYER_H = 24,  /**< Height of player sprite. */
 
