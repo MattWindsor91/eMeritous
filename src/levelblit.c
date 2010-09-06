@@ -83,7 +83,6 @@ void DrawArtifacts();
 void HandleEvents();
 
 void text_init();
-void draw_text(int x, int y, char *str, Uint8 tcol);
 unsigned char font_data[128][8][8];
 
 void DrawShield();
@@ -1501,7 +1500,7 @@ void draw_char(int cur_x, int cur_y, int c, Uint8 tcol)
   }
 }
 
-void draw_text(int x, int y, char *str, Uint8 tcol)
+void draw_text(int x, int y, const char *str, Uint8 tcol)
 {
   int c, cur_x, cur_y;
 	
@@ -1520,7 +1519,7 @@ void draw_text(int x, int y, char *str, Uint8 tcol)
   }
 }
 
-void draw_text_ex(int x, int y, char *str, Uint8 tcol, SDL_Surface *srf)
+void draw_text_ex(int x, int y, const char *str, Uint8 tcol, SDL_Surface *srf)
 {
   Uint8 *pix;
   int c, cur_x, cur_y, px, py;
