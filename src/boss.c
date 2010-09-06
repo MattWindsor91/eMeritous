@@ -37,10 +37,10 @@
 #include "gamemap.h"
 #include "audio.h"
 
-char *boss_names[] = {	"MERIDIAN",
-                        "ATARAXIA",
-                        "MERODACH",
-                        "WERVYN ANIXIL" };
+const char *boss_names[] = {"MERIDIAN",
+                            "ATARAXIA",
+                            "MERODACH",
+                            "WERVYN ANIXIL" };
 
 int boss_fight_mode = 0;
 /* 0 - no boss fight
@@ -78,7 +78,7 @@ int boss_2h_dst = 64;
 
 int percent_required[4] = {15, 40, 60, 75};
 
-char *artifact_names[] = { 	"Holy Sword 'Balmung'",
+const char *artifact_names[] = {"Holy Sword 'Balmung'",
                                 "Mystic Halberd 'Amenonuhoko'",
                                 "Divine Bow 'Gandiva'",
                                 "Cursed Seal of Yahveh"};
@@ -90,7 +90,7 @@ struct dlg_box {
   int pos;
   int lines;
   int last;
-  char *txt;
+  const char *txt;
 };
 
 struct dlg_box dtext[5][12] =

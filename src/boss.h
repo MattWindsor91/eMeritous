@@ -36,8 +36,8 @@ enum {
 };
 
 extern int boss_fight_mode, current_boss_room;
-extern char *boss_names[];
-extern char *artifact_names[];
+extern const char *boss_names[];
+extern const char *artifact_names[];
 extern int current_boss;
 extern int boss_lives;
 
