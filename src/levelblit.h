@@ -34,6 +34,8 @@ enum {
   PLAYER_W = 16,  /**< Width of player sprite. */
   PLAYER_H = 24,  /**< Height of player sprite. */
 
+  BG_COLOUR = 2,  /**< Colour (8-bit greyscale) of the background. */
+
   K_UP = 0,       /**< Up key. */
   K_DN,           /**< Down key. */
   K_LT,           /**< Left key. */

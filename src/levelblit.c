@@ -1137,52 +1137,61 @@ void HandleEvents()
 	
 }
 
-void DrawLevel(int off_x, int off_y, int hide_not_visited, int fog_of_war)
+void DrawTile(int x, int y, int off_x, int off_y, int hide_not_visited, int fog_of_war)
 {
+  SDL_Rect tilerec, screenrec;
+  int i;
+  int resolve_x, resolve_y;
+
   static SDL_Surface *tiles = NULL;
   static SDL_Surface *fog = NULL;
-  Uint8 *pp;
-  SDL_Rect tilerec, screenrec;
-  int x, y, i;
-  int resolve_x, resolve_y;
-	
-  DrawRect(0, 0, SCREEN_W, SCREEN_H, 255);
-	
+
   if (tiles == NULL) {
+    Uint8 *pp;
+
     tiles = IMG_Load(IMG_TILESET);
     fog = IMG_Load(IMG_TILESET);
 				
     pp = fog->pixels;
-		
+
     for (i = 0; i < fog->w*fog->h; i++) {
       *pp = *pp / 2 + 128;
       pp++;
     }
   }
+
+  resolve_x = x + (off_x/32);
+  resolve_y = y + (off_y/32);
+
+  /* Don't bother with a tile blit if there isn't a tile here. */		
+  if ((GetVisited(resolve_x, resolve_y) > 0) ||
+      (player_room == GetRoom(resolve_x, resolve_y)) || 
+      (hide_not_visited == 0)) {
+    tilerec.x = Get(resolve_x, resolve_y) * 32;
+    tilerec.y = 0;
+    tilerec.w = 32;
+    tilerec.h = 32;
+			
+    screenrec.x = x*32 - ( (off_x) %32);
+    screenrec.y = y*32 - ( (off_y) %32);
+
+    if ((player_room != GetRoom(resolve_x, resolve_y))&&(fog_of_war)) {
+      SDL_BlitSurface(fog, &tilerec, screen, &screenrec);
+    } else {
+      SDL_BlitSurface(tiles, &tilerec, screen, &screenrec);
+    }
+  }
+}
+
+void DrawLevel(int off_x, int off_y, int hide_not_visited, int fog_of_war)
+{
+  int x, y;
+	
+  DrawRect(0, 0, SCREEN_W, SCREEN_H, BG_COLOUR);
+	
   for (y = 0; y < 16; y++) {
     for (x = 0; x < 21; x++) {
-      resolve_x = x + (off_x/32);
-      resolve_y = y + (off_y/32);
-			
-      if ((GetVisited(resolve_x, resolve_y) == 0) && 
-          (player_room != GetRoom(resolve_x, resolve_y)) && 
-          (hide_not_visited)) {
-        tilerec.x = 17 * 32;
-      } else {
-        tilerec.x = Get(resolve_x, resolve_y) * 32;
-      }
-      tilerec.y = 0;
-      tilerec.w = 32;
-      tilerec.h = 32;
-			
-      screenrec.x = x*32 - ( (off_x) %32);
-      screenrec.y = y*32 - ( (off_y) %32);
-			
-      if ((player_room != GetRoom(resolve_x, resolve_y))&&(fog_of_war)) {
-        SDL_BlitSurface(fog, &tilerec, screen, &screenrec);
-      } else {
-        SDL_BlitSurface(tiles, &tilerec, screen, &screenrec);
-      }
+      DrawTile(x, y, off_x, off_y, hide_not_visited, fog_of_war);
     }
   }
 }
