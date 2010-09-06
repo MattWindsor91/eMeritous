@@ -36,6 +36,7 @@
 #include "audio.h"
 #include "boss.h"
 #include "tiles.h"
+#include "screens.h"
 
 SDL_Surface *reticle;
 SDL_Surface *inrange;
@@ -1605,8 +1606,8 @@ void MoveBullet(struct bullet *e)
           while (!IsSolid(Get((fx)/32, (fy)/32))) {
             if (player_dying == 0) {
               if (PlayerDist(fx, fy) < 30) {
-                // hits player shield
-                if ((player.reflect_shield > 0)&&(shield_hp > 0)) {
+                /* hits player shield */
+                if ((player.reflect_shield > 0) && (shield_hp > 0)) {
                   shield_hp -= e->shield_damage;
                   if (shield_hp >= 0) {
                     e->dying = 1;
@@ -1618,7 +1619,7 @@ void MoveBullet(struct bullet *e)
 								
                 if (PlayerDist(fx, fy) < 4 - (2 * artifacts[5])) {
                   player_dying = 1;
-                  SND_Pos("dat/a/playerhurt.wav", 128, 0);
+                  SND_Pos(SND_PLAYER_HURT, 128, 0);
                   e->dying = 1;
                   break;
                 }
@@ -1658,7 +1659,7 @@ void MoveBullet(struct bullet *e)
                 c_shield_hit_sound = SDL_GetTicks();
 								
                 if ((c_shield_hit_sound - 150) > last_shield_hit_sound) {
-                  SND_Pos("dat/a/shieldhit.wav", 50, 0);
+                  SND_Pos(SND_SHIELD_HIT, 50, 0);
                   last_shield_hit_sound = c_shield_hit_sound;
                 }
                 while (PlayerDist(e->x, e->y) < 30) {
@@ -1673,7 +1674,7 @@ void MoveBullet(struct bullet *e)
       if (e->dying == 0) {
         if (pdist < 6 - (2 * artifacts[5])) {
           if (player_dying == 0) {
-            SND_Pos("dat/a/playerhurt.wav", 128, 0);
+            SND_Pos(SND_PLAYER_HURT, 128, 0);
             player_dying = 1;
           }
         }
@@ -2053,7 +2054,7 @@ void DrawEntities()
   struct enemyloc *els;
 	
   if ((rooms[player_room].room_type != 3)&&(rooms[player_room].room_type != 2)) {
-    // Draw gems
+    /* Draw gems */
 	
     g = room_gems[player_room];
     while (g != NULL) {
@@ -2081,9 +2082,9 @@ void DrawEntities()
     t = t->next_active;
   }
 	
-  // Draw invisible enemies (if possible)
+  /* Draw invisible enemies (if possible) */
   if (artifacts[6]) {
-    // Draw the actives
+    /* Draw the actives */
     t = active_stack;
     while (t != NULL) {
       if (!t->delete_me) 
@@ -2094,7 +2095,7 @@ void DrawEntities()
         }
       t = t->next_active;
     }
-    // Draw the inactives
+    /* Draw the inactives */
     if (!artifacts[11]) {
       els = GetEnemyLoc(scroll_x, scroll_y);
       while (els != NULL) {
@@ -2152,12 +2153,12 @@ void MoveEntities()
           if (g->value == GEM_HEART) {
             /* If the player has fewer than 3 hearts, or 6 if 
                their shield is at maximum, add a heart. */
-            if (player.hp < (3 + (player.reflect_shield == 30)*3)) {
-              SND_Pos("dat/a/crystal.wav", 64, 0);
+            if (player.hp < (3 + (player.has_agate_knife) * 3)) {
+              SND_Pos(SND_GET_HP, 64, 0);
               player.hp++;
             } else {
               if (!training) {
-                SND_Pos("dat/a/tone.wav", 64, 0);
+                SND_Pos(SND_GET_LIFE_PART, 64, 0);
 			
                 /* Give more life parts if the player desperately needs
                    them. */
@@ -2174,7 +2175,7 @@ void MoveEntities()
                 if (player.lives_part >= LIFE_PART_MAX) {
                   player.lives_part -= LIFE_PART_MAX;
                   player.lives += 1;
-                  SND_Pos("dat/a/crystal2.wav", 100, 0);
+                  SND_Pos(SND_GET_LIFE, 100, 0);
                 }
               }
             }
@@ -2253,7 +2254,7 @@ void MoveEntities()
   while (g != NULL) {
     if (g->next != NULL) {
       if (g->next->delete_me) {
-        // Remove room reference
+        /* Remove room reference */
         assert( (g->next->prv_in_room != NULL) || (room_gems[g->next->room] == g->next) );
 				
         if (g->next == room_gems[g->next->room]) {

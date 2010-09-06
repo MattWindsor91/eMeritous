@@ -42,6 +42,13 @@ extern const char SND_CIRCUIT_CHARGE[];  /**< Circuit charge sound. */
 extern const char SND_CIRCUIT_RECOVER[]; /**< Circuit recover sound. */
 extern const char SND_CIRCUIT_RELEASE[]; /**< Circuit release sound. */
 
+extern const char SND_GET_HP[];          /**< Player gets a heart sound. */
+extern const char SND_GET_LIFE[];        /**< Player gets a life sound. */
+extern const char SND_GET_LIFE_PART[];   /**< Player gets a life part sound. */
+
+extern const char SND_PLAYER_HURT[];     /**< Player hurt sound. */
+extern const char SND_SHIELD_HIT[];      /**< Shield hit sound. */
+
 extern const char SND_ENEMY_HIT[];       /**< Enemy hit sound. */
 
 extern const char SNDF_ENEMY_SHOT[];      /**< Enemy shot sound (printf format). */

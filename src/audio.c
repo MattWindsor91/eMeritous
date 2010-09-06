@@ -78,6 +78,13 @@ const char SND_CIRCUIT_CHARGE[]  = "circuitcharge.wav";
 const char SND_CIRCUIT_RECOVER[] = "circuitrecover.wav";
 const char SND_CIRCUIT_RELEASE[] = "circuitrelease.wav";
 
+const char SND_GET_HP[] = "crystal.wav";
+const char SND_GET_LIFE[] = "crystal2.wav";
+const char SND_GET_LIFE_PART[] = "tone.wav";
+
+const char SND_PLAYER_HURT[] = "playerhurt.wav";
+const char SND_SHIELD_HIT[] = "shieldhit.wav";
+
 const char SND_ENEMY_HIT[] = "enemyhit.wav";
 const char SNDF_ENEMY_SHOT[] = "mons%ushot.wav";
 
