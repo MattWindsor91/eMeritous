@@ -26,7 +26,8 @@
 
 /** Display the development team logo. */
 
-void LogoScreen(void);
+void
+LogoScreen (void);
 
 /** Display a progress bar screen.
  *
@@ -35,20 +36,33 @@ void LogoScreen(void);
  *  @param message  The message to display on the progress bar.
  *  @param t_parts  ???
  */
-void ProgressBarScreen(int part, float progress, char *message, float t_parts);
+void
+ProgressBarScreen (int part, float progress, char *message, float t_parts);
 
 /** Display a loading screen.
  *
  *  @param part     ???
  *  @param progress ???
  */
-void LoadingScreen(int part, float progress);
+void
+LoadingScreen (int part, float progress);
 
 /** Display a saving screen.
  *
  *  @param part     ???
  *  @param progress ???
  */
-void SavingScreen(int part, float progress);
+void
+SavingScreen (int part, float progress);
+
+/** The main menu and title. */
+int
+main_menu (void);
+
+void
+set_logo_palette (int curve_start, int curve_end);
+
+void
+set_title_palette (int t);
 
 #endif /* __SCREENS_H__ */

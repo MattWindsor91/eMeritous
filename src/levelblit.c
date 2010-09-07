@@ -146,8 +146,6 @@ void ScrollTo(int x, int y);
 
 void SetGreyscalePalette();
 void SetTonedPalette(float pct);
-void SetTitlePalette(int curve_start, int curve_end);
-void SetTitlePalette2(int t);
 int TouchTile(int ix, int iy);
 void SpecialTile(int x, int y);
 void DrawRect(int x, int y, int w, int h, unsigned char c);
@@ -316,211 +314,230 @@ void UpRoom()
   }
 }
 
-void CancelVoluntaryExit()
+void
+CancelVoluntaryExit(void)
 {
-  if (voluntary_exit) {
-    voluntary_exit = 0;
-    game_paused = 0;
-  }
+  if (voluntary_exit) 
+    {
+      voluntary_exit = 0;
+      game_paused = 0;
+    }
 }
 
-void HandleEvents()
+void
+HandleEvents(void)
 {
   unsigned short db;
   static SDL_Event event;
   int pressed_tab = 0;
 	
-  if (PLAYBACK) {
-    db = fgetc(record_file);
-    db |= fgetc(record_file) << 8;
+  if (PLAYBACK)
+    {
+      db = fgetc (record_file);
+      db |= fgetc (record_file) << 8;
 		
-    key_held[K_UP] = (db & 0x0001)>0;
-    key_held[K_DN] = (db & 0x0002)>0;
-    key_held[K_LT] = (db & 0x0004)>0;
-    key_held[K_RT] = (db & 0x0008)>0;
-    key_held[K_SP] = (db & 0x0010)>0;
-    enter_pressed  = (db & 0x0020)>0;
-    map_enabled    = (db & 0x0040)>0;
-    game_running   = (db & 0x0080)>0;
-    game_paused    = (db & 0x0100)>0;
-    voluntary_exit = (db & 0x0200)>0;
-    pressed_tab    = (db & 0x0400)>0;
-    tele_select    = (db & 0x0800)>0;
+      key_held[K_UP] = (db & 0x0001) > 0;
+      key_held[K_DN] = (db & 0x0002) > 0;
+      key_held[K_LT] = (db & 0x0004) > 0;
+      key_held[K_RT] = (db & 0x0008) > 0;
+      key_held[K_SP] = (db & 0x0010) > 0;
+      enter_pressed  = (db & 0x0020) > 0;
+      map_enabled    = (db & 0x0040) > 0;
+      game_running   = (db & 0x0080) > 0;
+      game_paused    = (db & 0x0100) > 0;
+      voluntary_exit = (db & 0x0200) > 0;
+      pressed_tab    = (db & 0x0400) > 0;
+      tele_select    = (db & 0x0800) > 0;
 
-    return;
-  }
+      return;
+    }
 	
-  if (pressed_tab) {
-    c_scroll_x = player.x;
-    c_scroll_y = player.y;
-  }
+  if (pressed_tab)
+    {
+      c_scroll_x = player.x;
+      c_scroll_y = player.y;
+    }
 	
   enter_pressed = 0;
-  while (SDL_PollEvent(&event)) {
-    if (event.type == SDL_KEYDOWN) {
-      switch (event.key.keysym.sym) {
-      case SDLK_w:
-      case SDLK_UP:
-        key_held[K_UP] = 1;
-        CancelVoluntaryExit();
-        break;
-      case SDLK_s:
-      case SDLK_DOWN:
-        key_held[K_DN] = 1;
-        CancelVoluntaryExit();
-        break;
-      case SDLK_a:
-      case SDLK_LEFT:
-        key_held[K_LT] = 1;
-        CancelVoluntaryExit();
-        break;
-      case SDLK_d:
-      case SDLK_RIGHT:
-        key_held[K_RT] = 1;
-        CancelVoluntaryExit();
-        break;
-      case SDLK_SPACE:
-        key_held[K_SP] = 1;
-        CancelVoluntaryExit();
-        break;
-      case SDLK_RETURN:
-        enter_pressed = 1;
-        break;
-      case SDLK_ESCAPE:
-        if (map_enabled) {
-          map_enabled = 0;
-          game_paused = 0;
-          tele_select = 0;
-        } else {
-          voluntary_exit ^= 1;
-          game_paused = voluntary_exit;
-        }
-        break;
-      case SDLK_TAB:
-        if (tele_select) {
-          map_enabled = 0;
-          game_paused = 0;
-          tele_select = 0;
-        } else {
-          pressed_tab = 1;
-          map_enabled ^= 1;
-          game_paused = map_enabled;
-          c_scroll_x = player.x;
-          c_scroll_y = player.y;
-        }
-        CancelVoluntaryExit();
-        break;
-      case SDLK_h:
-        CancelVoluntaryExit();
-        ShowHelp();
-        break;
-      case SDLK_p:
-        game_paused ^= 1;
-        CancelVoluntaryExit();
-        break;
-						
-						
-        /*
-          case SDLK_j:
-          {
-          player.reflect_shield = 20;
-          player.circuit_refill = 20;
-          player.circuit_charge = 20;
-          }
-          break;
-          case SDLK_k:
-          {
-          int i, n, j;
-          for (j = 0; j < 1; j++) {
-          for (i = 0; i < 50000; i++) {
-          n = rand()%3000;
-          if (rooms[n].visited == 0) {
-          player.x = rooms[n].x * 32 + rooms[n].w * 16;
-          player.y = rooms[n].y * 32 + rooms[n].h * 16;
-          rooms[n].visited = 1;
-          explored++;
-          break;
-          }
-          }
-          }
-          }
-          break;
 
-          case SDLK_m:
-          {
-          int i;
-          for (i = 0; i < 8; i++) {
-          artifacts[i] = 1;
-          }
-          for (i = 8; i < 11; i++) {
-          artifacts[i] = 0;
-          }
-          artifacts[11] = 0;
-          }
-          break;
+  while (SDL_PollEvent (&event)) 
+    {
+      if (event.type == SDL_KEYDOWN)
+        {
+          switch (event.key.keysym.sym)
+            {
+            case SDLK_w:
+            case SDLK_UP:
+              key_held[K_UP] = 1;
+              CancelVoluntaryExit ();
+              break;
+            case SDLK_s:
+            case SDLK_DOWN:
+              key_held[K_DN] = 1;
+              CancelVoluntaryExit ();
+              break;
+            case SDLK_a:
+            case SDLK_LEFT:
+              key_held[K_LT] = 1;
+              CancelVoluntaryExit ();
+              break;
+            case SDLK_d:
+            case SDLK_RIGHT:
+              key_held[K_RT] = 1;
+              CancelVoluntaryExit ();
+              break;
+            case SDLK_SPACE:
+              key_held[K_SP] = 1;
+              CancelVoluntaryExit ();
+              break;
+            case SDLK_RETURN:
+              enter_pressed = 1;
+              break;
+            case SDLK_ESCAPE:
+              if (map_enabled)
+                {
+                  map_enabled = 0;
+                  game_paused = 0;
+                  tele_select = 0;
+                }
+              else
+                {
+                  voluntary_exit ^= 1;
+                  game_paused = voluntary_exit;
+                }
+              break;
+            case SDLK_TAB:
+              if (tele_select)
+                {
+                  map_enabled = 0;
+                  game_paused = 0;
+                  tele_select = 0;
+                }
+              else
+                {
+                  pressed_tab = 1;
+                  map_enabled ^= 1;
+                  game_paused = map_enabled;
+                  c_scroll_x = player.x;
+                  c_scroll_y = player.y;
+                }
+
+              CancelVoluntaryExit ();
+              break;
+            case SDLK_h:
+              CancelVoluntaryExit ();
+              ShowHelp ();
+              break;
+            case SDLK_p:
+              game_paused ^= 1;
+              CancelVoluntaryExit ();
+              break;
+
+              /*
+                case SDLK_j:
+                {
+                player.reflect_shield = 20;
+                player.circuit_refill = 20;
+                player.circuit_charge = 20;
+                }
+                break;
+                case SDLK_k:
+                {
+                int i, n, j;
+                for (j = 0; j < 1; j++) {
+                for (i = 0; i < 50000; i++) {
+                n = rand()%3000;
+                if (rooms[n].visited == 0) {
+                player.x = rooms[n].x * 32 + rooms[n].w * 16;
+                player.y = rooms[n].y * 32 + rooms[n].h * 16;
+                rooms[n].visited = 1;
+                explored++;
+                break;
+                }
+                }
+                }
+                }
+                break;
+
+                case SDLK_m:
+                {
+                int i;
+                for (i = 0; i < 8; i++) {
+                artifacts[i] = 1;
+                }
+                for (i = 8; i < 11; i++) {
+                artifacts[i] = 0;
+                }
+                artifacts[11] = 0;
+                }
+                break;
 						
-          case SDLK_n:
-          {
-          current_boss = 3;
-          expired_ms = 1000000;
-          }
-          break;
-        */
-      default:
-        break;
-      }
+                case SDLK_n:
+                {
+                current_boss = 3;
+                expired_ms = 1000000;
+                }
+                break;
+              */
+            default:
+              break;
+            }
+        }
+
+      if (event.type == SDL_KEYUP)
+        {
+          switch (event.key.keysym.sym)
+            {
+            case SDLK_w:
+            case SDLK_UP:
+              key_held[K_UP] = 0;
+              break;
+            case SDLK_s:
+            case SDLK_DOWN:
+              key_held[K_DN] = 0;
+              break;
+            case SDLK_a:
+            case SDLK_LEFT:
+              key_held[K_LT] = 0;
+              break;
+            case SDLK_d:
+            case SDLK_RIGHT:
+              key_held[K_RT] = 0;
+              break;
+            case SDLK_SPACE:
+              key_held[K_SP] = 0;
+              break;
+            default:
+              break;
+            }
+        }
+
+      if (event.type == SDL_QUIT)
+        voluntary_exit = 1;
+    
     }
-    if (event.type == SDL_KEYUP) {
-      switch (event.key.keysym.sym) {
-      case SDLK_w:
-      case SDLK_UP:
-        key_held[K_UP] = 0;
-        break;
-      case SDLK_s:
-      case SDLK_DOWN:
-        key_held[K_DN] = 0;
-        break;
-      case SDLK_a:
-      case SDLK_LEFT:
-        key_held[K_LT] = 0;
-        break;
-      case SDLK_d:
-      case SDLK_RIGHT:
-        key_held[K_RT] = 0;
-        break;
-      case SDLK_SPACE:
-        key_held[K_SP] = 0;
-        break;
-      default:
-        break;
-      }
-    }
-    if (event.type == SDL_QUIT) {
-      voluntary_exit = 1;
-    }
-  }
 		
-  if (RECORDING) {
-    db = 0;
+  if (RECORDING)
+    {
+      db = 0;
 		
-    db |= 0x0001 * key_held[K_UP];
-    db |= 0x0002 * key_held[K_DN];
-    db |= 0x0004 * key_held[K_LT];
-    db |= 0x0008 * key_held[K_RT];
-    db |= 0x0010 * key_held[K_SP];
-    db |= 0x0020 * enter_pressed;
-    db |= 0x0040 * map_enabled;
-    db |= 0x0080 * game_running;
-    db |= 0x0100 * game_paused;
-    db |= 0x0200 * voluntary_exit;
-    db |= 0x0400 * pressed_tab;
-    db |= 0x0800 * tele_select;
+      db |= 0x0001 * key_held[K_UP];
+      db |= 0x0002 * key_held[K_DN];
+      db |= 0x0004 * key_held[K_LT];
+      db |= 0x0008 * key_held[K_RT];
+      db |= 0x0010 * key_held[K_SP];
+      db |= 0x0020 * enter_pressed;
+      db |= 0x0040 * map_enabled;
+      db |= 0x0080 * game_running;
+      db |= 0x0100 * game_paused;
+      db |= 0x0200 * voluntary_exit;
+      db |= 0x0400 * pressed_tab;
+      db |= 0x0800 * tele_select;
 		
-    fputc(db & 0x00FF, record_file);
-    fputc((db & 0xFF00)>>8, record_file);
-    return;
-  }
-	
+      fputc(db & 0x00FF, record_file);
+      fputc((db & 0xFF00)>>8, record_file);
+      return;
+    }	
 }
 
 void DrawTile(int x, int y, int off_x, int off_y, int hide_not_visited, int fog_of_war)
@@ -720,47 +737,6 @@ void SetTonedPalette(float dct)
   SDL_SetPalette(screen, SDL_PHYSPAL, pal, 0, 256);
 }
 
-void SetTitlePalette(int curve_start, int curve_end)
-{
-  SDL_Color pal[256];
-  int ec;
-  int i;
-	
-  for (i = 0; i < 256; i++) {
-    ec = (i - curve_start) * 255 / (curve_end-curve_start);
-    if (ec < 0) ec = 0;
-    if (ec > 255) ec = 255;
-		
-    pal[i].r = ec;
-    pal[i].g = ec;
-    pal[i].b = ec;
-  }
-	
-  SDL_SetPalette(screen, SDL_PHYSPAL, pal, 0, 256);
-}
-
-void SetTitlePalette2(int t)
-{
-  SDL_Color pal[256];
-  int i;
-	
-  float ip;
-  float bright;
-  float b_coeff;
-	
-  bright = 1 - ((float)t / 30.0);
-  if (bright < 0.0) bright = 0.0;
-  b_coeff = 1 - bright;
-	
-  for (i = 0; i < 256; i++) {
-    ip = (float)i / 255.0;
-    pal[i].r = (cos(ip * M_PI / 2.0 + M_PI) + 1.0) * 255 * b_coeff + 255*bright;
-    pal[i].g = (sin(ip * M_PI / 2.0) * 255 + i) / 2 * b_coeff + 255*bright;
-    pal[i].b = sin(ip * M_PI / 2.0) * 255 * b_coeff + 255*bright;
-  }
-	
-  SDL_SetPalette(screen, SDL_PHYSPAL, pal, 0, 256);
-}
 
 int IsSolid(unsigned char tile)
 {

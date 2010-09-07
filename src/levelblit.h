@@ -83,30 +83,66 @@ extern int key_held[];
 extern int training;
 extern int show_ending;
 
-void DrawCircle(int x, int y, int r, unsigned char c);
-void DrawCircleEx(int x, int y, int r, int r2, unsigned char c);
-void DrawRect(int x, int y, int w, int h, unsigned char c);
-int IsSolid(unsigned char tile);
+/* Definitely move this. */
+extern int voluntary_exit;
 
+void
+DrawCircle (int x, int y, int r, unsigned char c);
 
-void WritePlayerData();
-void ReadPlayerData();
+void
+DrawCircleEx (int x, int y, int r, int r2, unsigned char c);
 
-void SetTonedPalette(float dct);
+void
+DrawRect (int x, int y, int w, int h, unsigned char c);
 
-void ThinLine(SDL_Surface *scr, int x1, int y1, int x2, int y2, Uint8 col);
-float RandomDir();
+int
+IsSolid (unsigned char tile);
 
-void Arc(SDL_Surface *s, int x, int y, int r, float dir);
+void
+WritePlayerData (void);
 
+void
+ReadPlayerData (void);
 
-void VideoUpdate();
-void EndCycle(int n);
+void
+SetGreyscalePalette (void);
 
-void DrawLevel(int off_x, int off_y, int hide_not_visited, int fog_of_war);
-void DrawPlayer(int x, int y, int pl_dir, int pl_frm);
-int GetNearestCheckpoint(int x, int y);
-int dist(int x1, int y1, int x2, int y2);
+void
+SetTonedPalette (float dct);
 
+Uint8
+Uint8_Bound (int i);
+
+void
+ThinLine (SDL_Surface *scr, int x1, int y1, int x2, int y2, Uint8 col);
+
+float
+RandomDir (void);
+
+void 
+Arc (SDL_Surface *s, int x, int y, int r, float dir);
+
+void
+VideoUpdate (void);
+
+void
+EndCycle (int n);
+
+void
+DrawLevel (int off_x, int off_y, int hide_not_visited, int fog_of_war);
+
+void
+DrawPlayer (int x, int y, int pl_dir, int pl_frm);
+
+int
+GetNearestCheckpoint (int x, int y);
+
+int
+dist (int x1, int y1, int x2, int y2);
+
+/* These might not be needed, or may need to be moved. */
+
+void
+HandleEvents (void);
 
 #endif /* __LEVELBLIT_H__ */

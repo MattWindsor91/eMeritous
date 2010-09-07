@@ -31,6 +31,8 @@ extern int PLAYBACK;
 extern FILE *record_file;
 extern int game_running;
 
+extern const char MERITOUS_VERSION[]; /**< Version string. */
+
 /** The main function.
  *
  *  @param argc  Argument count.
