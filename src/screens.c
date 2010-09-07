@@ -22,6 +22,7 @@
  **************************************************************************/
 
 #include "screens.h"
+#include "graphics.h"
 #include "levelblit.h"
 #include "save.h"
 

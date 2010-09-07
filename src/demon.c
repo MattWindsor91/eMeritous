@@ -29,6 +29,7 @@
 #include <assert.h>
 
 #include "demon.h"
+#include "graphics.h"
 #include "player.h"
 #include "levelblit.h"
 #include "mapgen.h"

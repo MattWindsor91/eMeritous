@@ -48,7 +48,6 @@ enum {
 
 /* Global variables for graphics. (TODO: re-organise?) */
 
-extern SDL_Surface *screen;
 extern SDL_Surface *artifact_spr;
 
 extern int player_x, player_y;

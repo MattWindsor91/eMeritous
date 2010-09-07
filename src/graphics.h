@@ -26,7 +26,7 @@
 
 #include <SDL.h>
 
-extern SDL_Surface *screen; /* TODO: move to graphics */
+extern SDL_Surface *screen; /**< The main video screen. */
 
 enum {
   NUM_CHARS = 128, /**< Number of characters to store. */

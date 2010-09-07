@@ -28,6 +28,8 @@
 #include <SDL_image.h>
 #include <string.h>
 
+#include "help.h"
+#include "graphics.h"
 #include "levelblit.h"
 
 struct help_line {

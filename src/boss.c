@@ -30,6 +30,7 @@
 #include <SDL_image.h>
 
 #include "boss.h"
+#include "graphics.h"
 #include "player.h"
 #include "levelblit.h"
 #include "mapgen.h"

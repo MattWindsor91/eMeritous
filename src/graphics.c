@@ -25,7 +25,13 @@
 
 #include "graphics.h"
 
-unsigned char font_data[NUM_CHARS][CHAR_W][CHAR_H]; /**< The font bitmap. */
+/* Graphics globals. */
+
+SDL_Surface *screen; /**< The main video screen. */
+
+/* Graphics statics. */
+
+static unsigned char font_data[NUM_CHARS][CHAR_W][CHAR_H]; /**< The font bitmap. */
 
 /** Initialise the text font. */
 void text_init(void)

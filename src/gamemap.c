@@ -28,6 +28,8 @@
 #include <SDL.h>
 #include <SDL_image.h>
 
+#include "gamemap.h"
+#include "graphics.h"
 #include "player.h"
 #include "levelblit.h"
 #include "mapgen.h"

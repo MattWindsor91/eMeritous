@@ -28,6 +28,8 @@
 #include <SDL_image.h>
 #include <assert.h>
 
+#include "ending.h"
+#include "graphics.h"
 #include "player.h"
 #include "levelblit.h"
 #include "audio.h"
