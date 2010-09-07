@@ -37,36 +37,124 @@
 #include "tiles.h"
 
 gzFile Filefp;
+
+SaveFile save;
+
 int game_load = 0;
 
 unsigned char lchar;
 int fpos = 0;
 
+/* Read a byte from the open GZipped file. */
+unsigned char s_read8(SaveFile *f)
+{
+  unsigned char c;
+
+  c = gzgetc(f->ptr);
+  c ^= 0x55;
+  c ^= f->pos & 0xFF;
+
+  lchar = c;
+  f->pos++;
+  return c;
+}
+
+
+/* Read a byte from the open GZipped file. */
+void s_write8(SaveFile *f, unsigned char i)
+{
+  unsigned char c;
+
+  c = i;
+  c ^= 0x55;
+  c ^= f->pos & 0xFF;
+  lchar = c;
+  f->pos++;
+  gzputc(f->ptr, c);
+}
+
+
+/* Read an integer from the open GZipped file. */
+int s_read32(SaveFile *f)
+{
+  int val;
+  int i, s;
+
+  i =  s_read8(f);
+  i |= s_read8(f) << 8;
+  i |= s_read8(f) << 16;
+  i |= s_read8(f) << 24;
+  s  = s_read8(f);
+  val = i * (s ? -1 : 1);
+
+  return val;
+}
+
+
+/* Write an integer from the open GZipped file. */
+void s_write32(SaveFile *f, int val)
+{
+  int i, s;
+  i = abs(val);
+  s = (val >= 0) ? 0 : 1;
+
+  s_write8(f, (i & 0xFF) >> 0);
+  s_write8(f, (i & 0xFF00) >> 8);
+  s_write8(f, (i & 0xFF0000) >> 16);
+  s_write8(f, (i & 0xFF000000) >> 24);
+
+  s_write8(f, s);
+}
+
+
+/* Read a floating point number from the open GZipped file. */
+float s_readf(SaveFile *f)
+{
+  float i;
+  int num;
+  int frac;
+
+  double f_frac;
+
+  num  = s_read32(f);
+  frac = s_read32(f);
+
+  f_frac = (double)frac / 2147483647.0;
+
+  i = (float)num + (float)f_frac;
+  return i;
+}
+
+
+/* Write a floating point number to the open GZipped file. */
+void s_writef(SaveFile *f, float i)
+{
+  int num;
+  int frac;
+
+  num = (int)(floorf(i));
+  s_write32(f, num);
+  frac = (int)((i - (float)num)*2147483647.0);
+
+  s_write32(f, frac);
+}
+
+
+/***************************
+ * BEGIN DEPRECATION BLOCK *
+ ***************************/
 
 /* Read a byte from the open GZipped file. */
 unsigned char FRChar(void)
 {
-  unsigned char c;
-  c = gzgetc(Filefp);
-  c ^= 0x55;
-  c ^= fpos & 0xFF;
-
-  lchar = c;
-  fpos++;
-  return c;
+  return s_read8(&save);
 }
 
 
 /* Read a floating point number from the open GZipped file. */
 void FWChar(unsigned char i)
 {
-  unsigned char c;
-  c = i;
-  c ^= 0x55;
-  c ^= fpos & 0xFF;
-  lchar = c;
-  fpos++;
-  gzputc(Filefp, c);
+  s_write8(&save, i);
 }
 
 
@@ -135,17 +223,22 @@ void FWFloat(float i)
   FWInt(frac);
 }
 
+/*************************
+ * END DEPRECATION BLOCK *
+ *************************/
 
 void SaveGame(const char *filename)
 {
   lchar = 0x7c;
   fpos = 0;
 
-  Filefp = gzopen(filename, "wb9");
-  FWChar(0x7C);
+  save.ptr = Filefp = gzopen(filename, "wb9");
+  save.pos = 0;
+
+  s_write8(&save, 0x7C);
   WriteMapData();
   WriteCreatureData();
-  write_player_data(&player);
+  write_player_data(&save, &player);
 
   gzclose(Filefp);
 }
@@ -157,8 +250,10 @@ void LoadGame(const char *filename)
   fpos = 0;
   lchar = 0x7c;
 
-  Filefp = gzopen(filename, "rb");
-  parity = FRChar();
+  save.ptr = Filefp = gzopen(filename, "rb");
+  save.pos = 0;
+
+  parity = s_read8(&save);
   if (parity != 0x7C) {
     fprintf(stderr, "Parity byte in error (%x != 0x7C)\nAborting\n", parity);
     exit(2);

@@ -24,16 +24,76 @@
 #ifndef __SAVE_H__
 #define __SAVE_H__
 
+#include <zlib.h>
+
+typedef struct SaveFile SaveFile;
+
+struct SaveFile {
+  gzFile *ptr; /**< Actual file pointer. */
+  int pos;     /**< Position in file. */
+};
+
 extern int game_load;
 
 void DoSaveGame(void);
 
+/** Read 8 bits from a save file.
+ *
+ *  @param f  The SaveFile to read from.
+ *
+ *  @return   The byte read from the file.
+ */
+unsigned char s_read8(SaveFile *f);
+
+
+/** Write 8 bits to a save file.
+ *
+ *  @param f  The SaveFile to write to.
+ *  @param i  The byte, in unsigned char format, to write.
+ */
+void s_write8(SaveFile *f, unsigned char i);
+
+
+/** Read 32 bits from a save file.
+ *
+ *  @param f  The SaveFile to read from.
+ *
+ *  @return  The integer read from the file.
+ */
+int s_read32(SaveFile *f);
+
+
+/** Write an integer to the open GZipped file.
+ *
+ *  @param f  The SaveFile to write to.
+ *  @param i  The integer value to write.
+ */
+void s_write32(SaveFile *f, int i);
+
+
+/** Read a floating point number from the open GZipped file.
+ *
+ *  @param f  The SaveFile to read from.
+ *
+ *  @return  The float read from the file.
+ */
+float s_readf(SaveFile *f);
+
+
+/** Write a floating point number to the open GZipped file.
+ *
+ *  @param f  The SaveFile to write to.
+ *  @param i  The float to write to the file.
+ */
+void s_writef(SaveFile *f, float i);
+
+/* Deprecation block */
 
 /** Read a byte from the open GZipped file.
  *
  *  @return  The byte read from the file.
  */
-unsigned char FRChar(void);
+unsigned char FRchar(void);
 
 
 /** Write a byte to the open GZipped file.

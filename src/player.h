@@ -25,6 +25,8 @@
 #ifndef __PLAYER_H__
 #define __PLAYER_H__
 
+#include "save.h"
+
 enum {
   ART_MAP                 = 0,  /**< ID of Complete Map artifact. */
   ART_SHIELD_BOOSTER      = 1,  /**< ID of Shield Booster artifact. */
@@ -101,16 +103,18 @@ void PlayerDefaultStats(void);
 
 /** Read player data from the opened data file.
  *
+ *  @param f  Pointer to the data file.
  *  @param p  Pointer to the player data structure.
  */
-void read_player_data(struct PlayerData *p);
+void read_player_data(SaveFile *f, struct PlayerData *p);
 
 
 /** Write player data to the opened data file.
  *
+ *  @param f  Pointer to the data file.
  *  @param p  Pointer to the player data structure.
  */
-void write_player_data(struct PlayerData *p);
+void write_player_data(SaveFile *f, struct PlayerData *p);
 
 
 /** Calculate the price of an upgrade.

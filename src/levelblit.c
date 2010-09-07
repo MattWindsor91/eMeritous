@@ -309,6 +309,8 @@ void Arc(SDL_Surface *s, int x, int y, int r, float dir)
 
 int DungeonPlay(char *fname)
 {
+  extern SaveFile save; /* <- Temporary workaround. */
+
   int ix,  iy;
   int off_x, off_y;
   int t = 0;
@@ -337,7 +339,7 @@ int DungeonPlay(char *fname)
   PlayerDefaultStats();
   if (game_load) {
     first_game = 0;
-    read_player_data(&player);
+    read_player_data(&save, &player);
     /*Paint(rooms[0].x+1, rooms[0].y+1, rooms[0].w-2, rooms[0].h-2, "dat/d/fbossroom.loc"); */
   } else {
     player.x = map.w * 32 / 2 - PLAYER_W/2;

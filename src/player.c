@@ -31,38 +31,38 @@ struct PlayerData player;
 
 
 /* Read player data from the opened data file.*/
-void read_player_data(struct PlayerData *p)
+void read_player_data(SaveFile *f, struct PlayerData *p)
 {
   int i;
 
-  expired_ms = FRInt();
-  p->x = FRInt();
-  p->y = FRInt();
-  scroll_x = FRInt();
-  scroll_y = FRInt();
-  magic_circuit = FRInt();
-  checkpoint_x = FRInt();
-  checkpoint_y = FRInt();
-  player_walk_speed = FRInt();
-  wlk_wait = FRInt();
-  p->circuit_charge = FRInt();
-  p->circuit_refill = FRInt();
-  explored = FRInt();
-  p->reflect_shield = FRInt();
-  shield_recover = FRInt();
-  shield_hp = FRInt();
-  p->crystals = FRInt();
-  checkpoints_found = FRInt();
-  p->hp = FRInt();
-  p->lives = FRInt();
-  p->lives_part = FRInt();
-  current_boss = FRInt();
-  training = FRInt();
+  expired_ms        = s_read32(f);
+  p->x              = s_read32(f);
+  p->y              = s_read32(f);
+  scroll_x          = s_read32(f);
+  scroll_y          = s_read32(f);
+  magic_circuit     = s_read32(f);
+  checkpoint_x      = s_read32(f);
+  checkpoint_y      = s_read32(f);
+  player_walk_speed = s_read32(f);
+  wlk_wait          = s_read32(f);
+  p->circuit_charge = s_read32(f);
+  p->circuit_refill = s_read32(f);
+  explored          = s_read32(f);
+  p->reflect_shield = s_read32(f);
+  shield_recover    = s_read32(f);
+  shield_hp         = s_read32(f);
+  p->crystals       = s_read32(f);
+  checkpoints_found = s_read32(f);
+  p->hp             = s_read32(f);
+  p->lives          = s_read32(f);
+  p->lives_part     = s_read32(f);
+  current_boss      = s_read32(f);
+  training          = s_read32(f);
 
-  agate_knife_loc = FRInt();
+  agate_knife_loc   = s_read32(f);
 
   for (i = 0; i < 12; i++) {
-    artifacts[i] = FRChar();
+    artifacts[i] = s_read8(f);
   }
 
   /* In previous versions, whether or not the Agate Knife was held by 
@@ -79,7 +79,7 @@ void read_player_data(struct PlayerData *p)
 
 
 /** Write player data to the opened data file. */
-void write_player_data(struct PlayerData *p)
+void write_player_data(SaveFile *f, struct PlayerData *p)
 {
   int i;
 
