@@ -26,6 +26,24 @@
 
 #include "filepaths.h"
 
+enum {
+  /* Music tracks. */
+  BGM_INNER          = 0,  /**< Normal Inner Ring BGM. */
+  BGM_MIDWAY         = 1,  /**< Normal Midway Ring BGM. */
+  BGM_OUTER          = 2,  /**< Normal Outer Ring BGM. */
+  BGM_EDGE           = 3,  /**< Normal Edge Ring BGM. */
+  BGM_ART_CHALLENGE  = 4,  /**< Artifact Challenge BGM. */ 
+  BGM_TITLE          = 5,  /**< Title theme BGM. */
+  BGM_CURSED_SEAL    = 6,  /**< Post-Cursed Seal BGM. */
+  BGM_MERIDIAN       = 7,  /**< Meridian boss BGM. */
+  BGM_ATARAXIA       = 8,  /**< Meridian boss BGM. */
+  BGM_MERODACH       = 9,  /**< Meridian boss BGM. */
+  BGM_FINAL          = 10, /**< Final boss BGM. */
+  BGM_FINAL_AGATE    = 12, /**< True final boss BGM. */
+  BGM_FINAL_CRITICAL = 7,  /**< True final boss critical BGM. */
+  BGM_FINAL_DEAD     = 11  /**< Final boss victory music. */
+};
+
 /* Enemy sound information */
 extern const int ENEMY_SND_VOLS[];   /**< Matrix of enemy sound volumes. */
 extern const int ENEMY_SND_DELAYS[]; /**< Matrix of enemy sound delays. */

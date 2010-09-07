@@ -26,7 +26,8 @@
 
 enum {
   /* Room types */
-  ROOM_BOSS = 2
+  ROOM_BOSS = 2,         /**< Normal boss room. */
+  ROOM_ART_CHALLENGE = 3 /**< Artifact Challenge room. */
 };
 
 #define MIN(x, y) (((x) < (y) ? (x) : (y)))

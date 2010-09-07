@@ -43,7 +43,7 @@ const char *boss_names[] = {"MERIDIAN",
                             "MERODACH",
                             "WERVYN ANIXIL" };
 
-int boss_fight_mode = 0;
+int boss_fight_mode = BSTA_NONE;
 /* 0 - no boss fight
  * 1 - entering boss room
  * 2 - fighting boss

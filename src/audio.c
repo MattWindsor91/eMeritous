@@ -30,6 +30,7 @@
 #include <string.h>
 
 #include "audio.h"
+#include "dungeon.h"
 #include "filepaths.h"
 #include "player.h"
 #include "levelblit.h"
@@ -240,50 +241,51 @@ void BackgroundMusic()
   Mix_VolumeMusic(96);
 	
   if (rooms[player_room].s_dist <= 15) {
-    new_track = 0;
+    new_track = BGM_INNER;
   }
 	
-  if (bgm_track == 1) {
+  if (bgm_track == BGM_MIDWAY) {
     if ((rooms[player_room].s_dist <= 30) && (rooms[player_room].s_dist >= 10)) {
-      new_track = 1;
+      new_track = BGM_MIDWAY;
     }
   }
-  if (bgm_track == 2) {
+  if (bgm_track == BGM_OUTER) {
     if ((rooms[player_room].s_dist <= 45) && (rooms[player_room].s_dist >= 25)) {
-      new_track = 2;
+      new_track = BGM_OUTER;
     }
   }
 	
   if (new_track == -1) {
     if ((rooms[player_room].s_dist <= 30) && (rooms[player_room].s_dist >= 16)) {
-      new_track = 1;
+      new_track = BGM_MIDWAY;
     }
     if ((rooms[player_room].s_dist <= 39) && (rooms[player_room].s_dist >= 31)) {
-      new_track = 2;
+      new_track = BGM_OUTER;
     }
     if (rooms[player_room].s_dist >= 40) {
-      new_track = 3;
+      new_track = BGM_EDGE;
     }
   }
 	
-  if (rooms[player_room].room_type == 3) {
-    new_track = 4;
+  if (rooms[player_room].room_type == ROOM_ART_CHALLENGE) {
+    new_track = BGM_ART_CHALLENGE;
   }
 	
   if (artifacts[ART_CURSED_SEAL]) {
-    new_track = 6;
+    new_track = BGM_CURSED_SEAL;
   }
 	
-  if (rooms[player_room].room_type == 2) {
-    if (boss_fight_mode == 2) {
-      if ( (current_boss == 3) && (player.reflect_shield == 30) ) {
+  if (rooms[player_room].room_type == ROOM_BOSS) {
+    if (boss_fight_mode == BSTA_FIGHTING) {
+      if ((current_boss == BOSS_FINAL) && 
+          (player.has_agate_knife) ) {
         if (boss_lives <= 1) {
-          new_track = 7;
+          new_track = BGM_FINAL_CRITICAL;
         } else {
-          new_track = 12;
+          new_track = BGM_FINAL_AGATE;
         }
       } else {
-        new_track = 7 + current_boss;
+        new_track = BGM_MERIDIAN + current_boss;
       }
       Mix_VolumeMusic(128);
     } else {
@@ -291,8 +293,10 @@ void BackgroundMusic()
     }
   }
 	
-  if ( (player_room == 0) && (current_boss == 3) && (boss_fight_mode >= 3) ) {
-    new_track = 11;
+  if ( (player_room == 0) &&
+       (current_boss == BOSS_FINAL) &&
+       (boss_fight_mode >= BSTA_DYING) ) {
+    new_track = BGM_FINAL_DEAD;
   }
 	
   if (new_track == bgm_track) return;

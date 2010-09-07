@@ -29,6 +29,16 @@ enum {
                              This is used, for example, to calculate 
                              where to put the bosses.
                              There should be one per PSI key. */
+
+  /* Boss battle states. */
+
+  BSTA_NONE     = 0, /**< No boss fight. */
+  BSTA_ENTERING = 1, /**< Entering a boss room. */
+  BSTA_FIGHTING = 2, /**< Fighting a boss. */
+  BSTA_DYING    = 3, /**< Boss is dying. */
+
+  /* Boss IDs. */
+
   BOSS_MERIDIAN = 0, /**< Meridian's boss ID. */
   BOSS_ATARAXIA = 1, /**< Ataraxia's boss ID. */
   BOSS_MERODACH = 2, /**< Merodach's boss ID. */
