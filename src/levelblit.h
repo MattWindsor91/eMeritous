@@ -92,6 +92,7 @@ int IsSolid(unsigned char tile);
 void WritePlayerData();
 void ReadPlayerData();
 
+void SetTonedPalette(float dct);
 
 void ThinLine(SDL_Surface *scr, int x1, int y1, int x2, int y2, Uint8 col);
 float RandomDir();

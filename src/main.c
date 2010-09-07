@@ -243,14 +243,14 @@ int main(int argc, const char **argv)
       SDL_FreeSurface(title);
       SDL_FreeSurface(title_pr);
       if ((option == 0) && can_continue) {
-        DungeonPlay("SaveFile.sav");
+        play_dungeon("SaveFile.sav");
       } else {
         if (option == (0 + can_continue)) {
           training = 0;
-          DungeonPlay("");
+          play_dungeon("");
         } else {
           training = 1;
-          DungeonPlay("");
+          play_dungeon("");
         }
       }
       /* clean up */

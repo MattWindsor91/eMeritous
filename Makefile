@@ -24,6 +24,7 @@ CCFLAGS = -O2 -Wall `sdl-config --cflags` -g -pedantic -DDEBUG_STATS -DNO_LOGO -
 CC      = clang
 #
 OBJS = 		src/main.o \
+		src/dungeon.o \
 		src/graphics.o \
 		src/files.o \
 		src/message.o \

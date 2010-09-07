@@ -445,7 +445,7 @@ void Curse()
 	
   /* - Lock all unvisited rooms off */
 	
-  for (i = 0; i < 3000; i++) {
+  for (i = 0; i < NUM_ROOMS; i++) {
     if (!rooms[i].visited) {
       rc = rooms[i].con;
 			
