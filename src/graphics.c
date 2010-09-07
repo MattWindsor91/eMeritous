@@ -25,17 +25,18 @@
 
 #include "graphics.h"
 
-unsigned char font_data[128][8][8]; /**< The font bitmap. */
+unsigned char font_data[NUM_CHARS][CHAR_W][CHAR_H]; /**< The font bitmap. */
 
+/** Initialise the text font. */
 void text_init(void)
 {
   FILE *font_data_file;
   int chr, x, y;
   font_data_file = fopen("dat/d/font.dat", "rb");
 	
-  for (chr = 0; chr < 128; chr++) {
-    for (y = 0; y < 8; y++) {
-      for (x = 0; x < 8; x++) {
+  for (chr = 0; chr < NUM_CHARS; chr++) {
+    for (y = 0; y < CHAR_H; y++) {
+      for (x = 0; x < CHAR_W; x++) {
         font_data[chr][x][y] = fgetc(font_data_file);
       }
     }
@@ -44,23 +45,30 @@ void text_init(void)
   fclose(font_data_file);
 }
 
+
+/** Draw a character onto the screen. */
 void draw_char(int cur_x, int cur_y, int c, Uint8 tcol)
 {
   int px, py;
   Uint8 *pix;
 	
-  for (py = 0; py < 8; py++) {
+  for (py = 0; py < CHAR_H; py++) {
     pix = (Uint8 *)screen->pixels;
     pix += (py+cur_y)*screen->w;
     pix += cur_x;
 		
-    if ((cur_x >= 0)&&(py+cur_y >= 0)&&(cur_x < screen->w-8)&&(py+cur_y < screen->h)) {
-      for (px = 0; px < 8; px++) {
+    if ((cur_x >= 0) && 
+        (py+cur_y >= 0) && 
+        (cur_x < screen->w - CHAR_W) && 
+        (py+cur_y < screen->h)) {
+      for (px = 0; px < CHAR_W; px++) {
         if (font_data[c][px][py] == 255) {
           *pix = tcol;
         }
-        if ((font_data[c][px][py] < 255)&&(font_data[c][px][py] > 0)) {
-          *pix = ((int)tcol * font_data[c][px][py] / 256) + ((int)*pix * (256-font_data[c][px][py]) / 256);
+        if ((font_data[c][px][py] < 255) && 
+            (font_data[c][px][py] > 0)) {
+          *pix = (((int)tcol * font_data[c][px][py] / 256) +
+                  ((int)*pix * (256-font_data[c][px][py]) / 256));
         }
         pix++;
       }
@@ -68,6 +76,7 @@ void draw_char(int cur_x, int cur_y, int c, Uint8 tcol)
   }
 }
 
+/** Draw a text string onto the screen. */
 void draw_text(int x, int y, const char *str, Uint8 tcol)
 {
   int c, cur_x, cur_y;
@@ -75,18 +84,20 @@ void draw_text(int x, int y, const char *str, Uint8 tcol)
   cur_x = x;
   cur_y = y;
 
-  while (*str != 0) {
-    c = *(str++);
+  for (c = *str; c != '\0'; str++, c = *str) {
+    /* Newline handling. */
     if (c == '\n') {
       cur_x = x;
-      cur_y+=10;
+      cur_y += CHAR_H + CHAR_P;
     } else {
       draw_char(cur_x, cur_y, c, tcol);
-      cur_x+=8;
+      cur_x += CHAR_W;
     }
   }
 }
 
+
+/** Draw text onto a surface. (?) */
 void draw_text_ex(int x, int y, const char *str, Uint8 tcol, SDL_Surface *srf)
 {
   Uint8 *pix;
@@ -95,24 +106,24 @@ void draw_text_ex(int x, int y, const char *str, Uint8 tcol, SDL_Surface *srf)
   cur_x = x;
   cur_y = y;
 
-  while (*str != 0) {
-    c = *(str++);
+  for (c = *str; c != '\0'; str++, c = *str) {
+    /* Newline handling. */
     if (c == '\n') {
       cur_x = x;
-      cur_y+=8;
+      cur_y += CHAR_H; /* Shouldn't this be + CHAR_P as well? */
     } else {
-      for (py = 0; py < 8; py++) {
-        pix = (Uint8 *)srf->pixels;
-        pix += (py+cur_y)*srf->w;
+      for (py = 0; py < CHAR_H; py++) {
+        pix = (Uint8 *) srf->pixels;
+        pix += (py + cur_y) * srf->w;
         pix += cur_x;
-        for (px = 0; px < 8; px++) {
+        for (px = 0; px < CHAR_W; px++) {
           if (font_data[c][px][py]) {
             *pix = tcol;
           }
           pix++;
         }
       }
-      cur_x+=8;
+      cur_x += CHAR_H;
     }
   }
 }
