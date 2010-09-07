@@ -24,9 +24,96 @@
 #include "player.h"
 #include "mapgen.h"
 #include "levelblit.h"
+#include "save.h"
 
 /* This is the player instance the rest of the game uses. */
 struct PlayerData player;
+
+
+/* Read player data from the opened data file.*/
+void read_player_data(struct PlayerData *p)
+{
+  int i;
+
+  expired_ms = FRInt();
+  p->x = FRInt();
+  p->y = FRInt();
+  scroll_x = FRInt();
+  scroll_y = FRInt();
+  magic_circuit = FRInt();
+  checkpoint_x = FRInt();
+  checkpoint_y = FRInt();
+  player_walk_speed = FRInt();
+  wlk_wait = FRInt();
+  p->circuit_charge = FRInt();
+  p->circuit_refill = FRInt();
+  explored = FRInt();
+  p->reflect_shield = FRInt();
+  shield_recover = FRInt();
+  shield_hp = FRInt();
+  p->crystals = FRInt();
+  checkpoints_found = FRInt();
+  p->hp = FRInt();
+  p->lives = FRInt();
+  p->lives_part = FRInt();
+  current_boss = FRInt();
+  training = FRInt();
+
+  agate_knife_loc = FRInt();
+
+  for (i = 0; i < 12; i++) {
+    artifacts[i] = FRChar();
+  }
+
+  /* In previous versions, whether or not the Agate Knife was held by 
+     the player was designated by the player reflect shield being 30. 
+     In order to maintain save compatibility, we check this here 
+     and set the new Agate Knife flag. */
+
+  if (p->reflect_shield == 30) {
+    p->has_agate_knife = 1;
+  } else {
+    p->has_agate_knife = 0;
+  }
+}
+
+
+/** Write player data to the opened data file. */
+void write_player_data(struct PlayerData *p)
+{
+  int i;
+
+  FWInt(expired_ms);
+  FWInt(checkpoint_x);
+  FWInt(checkpoint_y);
+  FWInt(scroll_x);
+  FWInt(scroll_y);
+  FWInt(magic_circuit);
+  FWInt(checkpoint_x);
+  FWInt(checkpoint_y);
+  FWInt(player_walk_speed);
+  FWInt(wlk_wait);
+  FWInt(p->circuit_charge);
+  FWInt(p->circuit_refill);
+  FWInt(explored);
+  FWInt(p->reflect_shield);
+  FWInt(shield_recover);
+  FWInt(shield_hp);
+  FWInt(p->crystals);
+  FWInt(checkpoints_found);
+  FWInt(p->hp);
+  FWInt(p->lives);
+  FWInt(p->lives_part);
+  FWInt(current_boss);
+  FWInt(training);
+  FWInt(agate_knife_loc);
+
+  for (i = 0; i < 12; i++) {
+    FWChar(artifacts[i]);
+  }
+}
+
+
 
 void PlayerDefaultStats(void)
 {

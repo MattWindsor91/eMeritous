@@ -90,9 +90,27 @@ extern int circuit_release;
 extern int scroll_home;
 extern int opening_door_i;
 extern int map_enabled;
+extern int expired_ms;
+extern int current_boss;
+extern int agate_knife_loc;
+
 
 /** Initialise the player information to defaults. */
 void PlayerDefaultStats(void);
+
+
+/** Read player data from the opened data file.
+ *
+ *  @param p  Pointer to the player data structure.
+ */
+void read_player_data(struct PlayerData *p);
+
+
+/** Write player data to the opened data file.
+ *
+ *  @param p  Pointer to the player data structure.
+ */
+void write_player_data(struct PlayerData *p);
 
 
 /** Calculate the price of an upgrade.

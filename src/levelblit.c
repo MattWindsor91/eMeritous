@@ -83,9 +83,6 @@ void DrawArtifacts();
 
 void HandleEvents();
 
-void text_init();
-unsigned char font_data[128][8][8];
-
 void DrawShield();
 
 int key_held[10] = {0};
@@ -146,7 +143,7 @@ int UpgradePrice(int t);
 
 void ScrollTo(int x, int y);
 
-SDL_Surface *screen;
+
 
 void SetGreyscalePalette();
 void SetTonedPalette(float pct);
@@ -193,86 +190,6 @@ void EndCycle(int n)
   if (!game_paused) expired_ms += n;
 		
   last_ticks = SDL_GetTicks();
-}
-
-void WritePlayerData()
-{
-  int i;
-
-  FWInt(expired_ms);
-  FWInt(checkpoint_x);
-  FWInt(checkpoint_y);
-  FWInt(scroll_x);
-  FWInt(scroll_y);
-  FWInt(magic_circuit);
-  FWInt(checkpoint_x);
-  FWInt(checkpoint_y);
-  FWInt(player_walk_speed);
-  FWInt(wlk_wait);
-  FWInt(player.circuit_charge);
-  FWInt(player.circuit_refill);
-  FWInt(explored);
-  FWInt(player.reflect_shield);
-  FWInt(shield_recover);
-  FWInt(shield_hp);
-  FWInt(player.crystals);
-  FWInt(checkpoints_found);
-  FWInt(player.hp);
-  FWInt(player.lives);
-  FWInt(player.lives_part);
-  FWInt(current_boss);
-  FWInt(training);
-  FWInt(agate_knife_loc);
-
-  for (i = 0; i < 12; i++) {
-    FWChar(artifacts[i]);
-  }
-}
-
-void ReadPlayerData()
-{
-  int i;
-
-  expired_ms = FRInt();
-  player.x = FRInt();
-  player.y = FRInt();
-  scroll_x = FRInt();
-  scroll_y = FRInt();
-  magic_circuit = FRInt();
-  checkpoint_x = FRInt();
-  checkpoint_y = FRInt();
-  player_walk_speed = FRInt();
-  wlk_wait = FRInt();
-  player.circuit_charge = FRInt();
-  player.circuit_refill = FRInt();
-  explored = FRInt();
-  player.reflect_shield = FRInt();
-  shield_recover = FRInt();
-  shield_hp = FRInt();
-  player.crystals = FRInt();
-  checkpoints_found = FRInt();
-  player.hp = FRInt();
-  player.lives = FRInt();
-  player.lives_part = FRInt();
-  current_boss = FRInt();
-  training = FRInt();
-
-  agate_knife_loc = FRInt();
-
-  for (i = 0; i < 12; i++) {
-    artifacts[i] = FRChar();
-  }
-
-  /* In previous versions, whether or not the Agate Knife was held by 
-     the player was designated by the player reflect shield being 30. 
-     In order to maintain save compatibility, we check this here 
-     and set the new Agate Knife flag. */
-
-  if (player.reflect_shield == 30) {
-    player.has_agate_knife = 1;
-  } else {
-    player.has_agate_knife = 0;
-  }
 }
 
 #define min(x, y) (((x) < (y) ? (x) : (y)))
@@ -420,7 +337,7 @@ int DungeonPlay(char *fname)
   PlayerDefaultStats();
   if (game_load) {
     first_game = 0;
-    ReadPlayerData();
+    read_player_data(&player);
     /*Paint(rooms[0].x+1, rooms[0].y+1, rooms[0].w-2, rooms[0].h-2, "dat/d/fbossroom.loc"); */
   } else {
     player.x = map.w * 32 / 2 - PLAYER_W/2;

@@ -28,6 +28,8 @@
 #include <SDL_image.h>
 #include <zlib.h>
 
+#include "player.h"
+#include "screens.h"
 #include "files.h"
 #include "levelblit.h"
 #include "mapgen.h"
@@ -143,7 +145,7 @@ void SaveGame(const char *filename)
   FWChar(0x7C);
   WriteMapData();
   WriteCreatureData();
-  WritePlayerData();
+  write_player_data(&player);
 
   gzclose(Filefp);
 }
