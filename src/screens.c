@@ -64,8 +64,6 @@ void LogoScreen(void)
 #endif /* NO_LOGO */
 }
 
-/* This is broken in emeritous. Not sure why yet. */
-
 void ProgressBarScreen(int part, float progress, char *message, float t_parts)
 {
   memset(screen->pixels, 0, SCREEN_W * SCREEN_H);
