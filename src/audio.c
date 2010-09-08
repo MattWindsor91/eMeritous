@@ -61,8 +61,8 @@ const int ENEMY_SND_DELAYS[11] = {200,
                                   242,
                                   250};
 
-const char *tracks[13] = {"ICEFRONT.S3M",
-                          "cavern.xm",
+const char *tracks[13] = {"inner.ogg",
+                          "midway.ogg",
                           "cave.xm",
                           "cave06.s3m",
                           "Wood.s3m",
