@@ -24,7 +24,21 @@
 #ifndef __TILES_H__
 #define __TILES_H__
 
-struct TileInfo {
+enum
+  {
+    /* Tile types. */
+    TILE_CHECKPOINT = 25, /**< A checkpoint tile. */
+    TILE_CHEST      = 26, /**< A treasure chest tile. */
+    TILE_CHEST_OPEN = 27, /**< An opened treasure chest tile. */
+    TILE_SHIELD_UP  = 28, /**< A shield upgrade tile. */
+    TILE_CHARGE_UP  = 29, /**< A circuit charge upgrade tile. */
+    TILE_REFILL_UP  = 30, /**< A circuit refill upgrade tile. */
+    TILE_SAVE       = 31, /**< A save point tile. */
+    TILE_CRYSTAL    = 32  /**< A crystal machine tile. */
+  };
+
+struct TileInfo
+{
   int Is_Solid;
   int Is_Special;
   int Is_Passage;

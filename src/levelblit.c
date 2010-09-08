@@ -1118,7 +1118,7 @@ void ActivateTile(unsigned char tile, int x, int y)
 	
   enter_pressed = 0;
   switch (tile) {
-  case 25:
+  case TILE_CHECKPOINT:
     /* Cursed seal stops checkpoints working. */
     if (artifacts[ART_CURSED_SEAL]) break;
 
@@ -1141,11 +1141,11 @@ void ActivateTile(unsigned char tile, int x, int y)
     }
 			
     break;
-  case 26:
+  case TILE_CHEST:
     RoomTreasure(GetRoom(x, y), (x+y)%2);
-    Put(x, y, 27, GetRoom(x, y));
+    Put(x, y, TILE_CHEST_OPEN, GetRoom(x, y));
     break;
-  case 28:
+  case TILE_SHIELD_UP:
     if (player.reflect_shield >= 24) return;
     if (player.crystals >= UpgradePrice(UP_REFLECT_SHIELD)) {
       player.crystals -= UpgradePrice(UP_REFLECT_SHIELD);
@@ -1153,7 +1153,7 @@ void ActivateTile(unsigned char tile, int x, int y)
       SND_Pos("dat/a/crystal.wav", 128, 0);
     }
     break;
-  case 29:
+  case TILE_CHARGE_UP:
     if (player.circuit_charge >= 24) return;
     if (player.crystals >= UpgradePrice(UP_CIRCUIT_CHARGE)) {
       player.crystals -= UpgradePrice(UP_CIRCUIT_CHARGE);
@@ -1161,7 +1161,7 @@ void ActivateTile(unsigned char tile, int x, int y)
       SND_Pos("dat/a/crystal.wav", 128, 0);
     }
     break;
-  case 30:
+  case TILE_REFILL_UP:
     if (player.circuit_refill >= 24) return;
     if (player.crystals >= UpgradePrice(UP_CIRCUIT_REFILL)) {
       player.crystals -= UpgradePrice(UP_CIRCUIT_REFILL);
@@ -1169,10 +1169,10 @@ void ActivateTile(unsigned char tile, int x, int y)
       SND_Pos("dat/a/crystal.wav", 128, 0);
     }
     break;
-  case 31:
+  case TILE_SAVE:
     DoSaveGame();
     break;
-  case 32:
+  case TILE_CRYSTAL:
     CrystalSummon();
     SND_Pos("dat/a/crystal.wav", 80, 0);
     break;
