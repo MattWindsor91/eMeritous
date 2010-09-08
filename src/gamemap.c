@@ -251,11 +251,12 @@ void DisplayAutomap()
       if ((rx >= 0)&&(ry >= 0)&&(rx < 512)&&(ry < 512)) {
         if (rooms[GetRoom(rx, ry)].visited) {
           tile = Get(rx, ry);
-          /* Note: the UINT_MAX check is to prevent the checkpoint selector from 
+          /* Note: the -1 check is to prevent the checkpoint selector from 
              overflowing and showing the outline of the dungeon in the automap. */
-          if (tele_select && (nearest_checkpoint == GetRoom(rx, ry)) && ((t / 3) % 2) && 
-              nearest_checkpoint != UINT_MAX) {
-            printf("%u\n", GetRoom(rx, ry));
+          if (tele_select 
+              && nearest_checkpoint == GetRoom(rx, ry) 
+              && ((t / 3) % 2)
+              && nearest_checkpoint != -1) {
             xcol = 255;
           }
           col = automap_cols[TileData[tile].Type];
