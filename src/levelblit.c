@@ -306,7 +306,7 @@ void UpRoom()
 	
   nd = rooms[player_room].s_dist + 1;
 	
-  for (i = 0; i < 3000; i++) {
+  for (i = 0; i < NUM_ROOMS; i++) {
     if (rooms[i].s_dist == nd) {
       player.x = rooms[i].x * 32 + 64;
       player.y = rooms[i].y * 32 + 64;
@@ -832,7 +832,7 @@ void ActivateRoom(int room)
   if (rooms[room].checkpoint) {
     checkpoints_found++;
   }
-  if (rooms[room].room_type == 3) {
+  if (rooms[room].room_type == ROOM_ART_CHALLENGE) {
     /* lock the doors!*/
     lock_doors(room);
   }
@@ -1211,7 +1211,7 @@ void CompassPoint()
       /* Has the player got this artifact already? */
       if (artifacts[ART_HOLY_SWORD + i] == 0) {
         /* No - has the player already destroyed the boss? */
-        if (rooms[boss_room].room_type == 2) {
+        if (rooms[boss_room].room_type == ROOM_BOSS) {
           /* No - can the player get the artifact? */
           if (CanGetArtifact()) {
             /* Point player to this artifact room, if it is the nearest */
@@ -1226,7 +1226,7 @@ void CompassPoint()
         }
       } else {
         /* Yes, has artifact - Has the player already destroyed the boss? */
-        if (rooms[boss_room].room_type == 2) {
+        if (rooms[boss_room].room_type == ROOM_BOSS) {
           /* No - Point player to the boss room, if it is the nearest */
           loc_x = rooms[boss_room].x * 32 + rooms[i * 1000 + 999].w * 16;
           loc_y = rooms[boss_room].y * 32 + rooms[i * 1000 + 999].h * 16;
