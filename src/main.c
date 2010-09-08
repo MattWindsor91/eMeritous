@@ -56,36 +56,22 @@ int game_running = 1;
 
 int main(int argc, const char **argv)
 {
-  int executable_running = 1;
-
   SDL_Surface *wm_icon;
-
   Uint8 wm_mask[128];
   int i;
-
   int x, y;
-
-
-
   int option = 0;
   int can_continue = 0;
-
-
-	
-
-	
   int fullscreen = 0;
-
+  int executable_running = 1;
   unsigned int stime = 0;
 	
   FILE *wm_mask_file;
 
   if (argc > 1)
     {
-
     for (i = 1; i < argc; i++)
       {
-
       if (!strcasecmp (argv[i], "fullscreen"))
         fullscreen = 1;
 
@@ -117,87 +103,90 @@ int main(int argc, const char **argv)
 
   srand (time (NULL));
 
-  if (RECORDING) {
-    record_file = fopen(record_filename, "wb");
-    stime = time(NULL);
+  if (RECORDING)
+    {
+      record_file = fopen (record_filename, "wb");
+      stime = time (NULL);
 		
-    fputc(stime & 0x000000FF, record_file);
-    fputc((stime & 0x0000FF00) >> 8, record_file);
-    fputc((stime & 0x00FF0000) >> 16, record_file);
-    fputc((stime & 0xFF000000) >> 24, record_file);
-		
-    srand(stime);
-  }
-  if (PLAYBACK) {
-    record_file = fopen(record_filename, "rb");
-    stime = fgetc(record_file);
-    stime |= fgetc(record_file) << 8;
-    stime |= fgetc(record_file) << 16;
-    stime |= fgetc(record_file) << 24;
-		
-    srand(stime);
-  }
-	
-  wm_icon = IMG_Load("dat/i/icon.png");
-	
-  screen = SDL_SetVideoMode(SCREEN_W, SCREEN_H, 8, SDL_SWSURFACE
-                            | (SDL_FULLSCREEN * fullscreen));
-	
-  wm_mask_file = fopen("dat/d/icon_bitmask.dat", "rb");
-  fread(wm_mask, 1, 128, wm_mask_file);
-  fclose(wm_mask_file);
-  SDL_WM_SetCaption("~ m e r i t o u s ~", "MT");
-  SDL_WM_SetIcon(wm_icon, wm_mask);
-  InitAudio();
-	
-  text_init();
-	       
+      fputc (stime & 0x000000FF, record_file);
+      fputc ((stime & 0x0000FF00) >> 8, record_file);
+      fputc ((stime & 0x00FF0000) >> 16, record_file);
+      fputc ((stime & 0xFF000000) >> 24, record_file);
 
-  SetGreyscalePalette();
-
-  LogoScreen();
-	
-  while (executable_running) {
-    option = main_menu();
-
-    if (IsSaveFile())
-      {
-        can_continue = 1;
-      } 
-    else
-      {
-        can_continue = 0;
-      }
-		
-    ClearInput();
-		
-    if (executable_running == 1) {
-
-      if ((option == 0) && can_continue) {
-        play_dungeon("SaveFile.sav");
-      } else {
-        if (option == (0 + can_continue)) {
-          training = 0;
-          play_dungeon("");
-        } else {
-          training = 1;
-          play_dungeon("");
-        }
-      }
-      /* clean up */
-      ClearInput();
-      DestroyDungeon();
-      DestroyThings();
-      /*on_title = 1;*/
-      game_load = 0;
-			
-      game_running = 1;
+      srand (stime);
     }
-  }
+  else if (PLAYBACK)
+    {
+      record_file = fopen (record_filename, "rb");
+      stime = fgetc (record_file);
+      stime |= fgetc (record_file) << 8;
+      stime |= fgetc (record_file) << 16;
+      stime |= fgetc (record_file) << 24;
+		
+      srand (stime);
+    }
+	
+  wm_icon = IMG_Load ("dat/i/icon.png");
+	
+  screen = SDL_SetVideoMode (SCREEN_W, SCREEN_H, 8, SDL_SWSURFACE
+                             | (SDL_FULLSCREEN * fullscreen));
+	
+  wm_mask_file = fopen ("dat/d/icon_bitmask.dat", "rb");
+  fread (wm_mask, 1, 128, wm_mask_file);
+  fclose (wm_mask_file);
+  SDL_WM_SetCaption ("~ m e r i t o u s ~", "MT");
+  SDL_WM_SetIcon (wm_icon, wm_mask);
+  InitAudio ();
+	
+  text_init ();
+	       
+  SetGreyscalePalette ();
+
+  LogoScreen ();
+	
+  while (executable_running)
+    {
+      option = main_menu ();
+
+      if (IsSaveFile ())
+        can_continue = 1; 
+      else
+        can_continue = 0;
+		
+      ClearInput ();
+		
+      if (executable_running == 1)
+        {
+          if ((option == 0) && can_continue)
+            play_dungeon ("SaveFile.sav");
+          else if (option == (0 + can_continue))
+            {
+              training = 0;
+              play_dungeon ("");
+            }
+          else if (option == (1 + can_continue))
+            {
+              training = 1;
+              play_dungeon ("");
+            }
+          else
+            {
+              ShowHelp ();
+            }
+        }
+        /* clean up */
+        ClearInput ();
+        DestroyDungeon ();
+        DestroyThings ();
+        /*on_title = 1;*/
+        game_load = 0;
+			
+        game_running = 1;
+    }
 
   /*	if (argc >= 2) DungeonPlay(argv[1]);
   	else DungeonPlay(""); */
 
-  SDL_Quit();
+  SDL_Quit ();
   return 0;
 }

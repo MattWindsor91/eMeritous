@@ -39,7 +39,7 @@ struct help_line {
 struct help_section {
   int lines;
   char *identifier;
-  struct help_line *l[256];
+  struct help_line *l[1024]; /** TODO: dynamic allocation. */
 };
 
 struct help_file {
@@ -143,7 +143,7 @@ void DisplayHelp()
           c_ident[strchr(ltext+1, '?')-ltext-1] = 0;
 						
           draw_text(40, 40+i*10, strchr(ltext+1, '?')+1, my_cursor == line_num ? 200+(tick%16)*3 : 150);
-          if ((my_link == 1)&&(my_cursor == line_num)) {
+          if ((my_link == 1) && (my_cursor == line_num)) {
             follow_link = 1;
             strcpy(linkfollow, c_ident);
           }

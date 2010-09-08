@@ -152,7 +152,7 @@ main_menu(void)
   else
     can_continue = 0;
 		
-  maxoptions = 2 + can_continue;
+  maxoptions = 3 + can_continue;
 	
   title = IMG_Load ("dat/i/title.png");
   title_pr = IMG_Load ("dat/i/title.png");
@@ -182,6 +182,8 @@ main_menu(void)
                  "New Game", 255);
       draw_text ((SCREEN_W - 14 * 8) / 2, 320 + can_continue * 10,
                  "New Game (Wuss mode)", 255);
+      draw_text ((SCREEN_W - 14 * 8) / 2, 330 + can_continue * 10,
+                 "Help/Licence", 255);
 		
       if (ticker_tick >= 30)
         {
