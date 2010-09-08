@@ -27,6 +27,7 @@
 #include <math.h>
 #include <time.h>
 #include <assert.h>
+#include <limits.h>
 
 #include <SDL.h>
 
@@ -348,24 +349,30 @@ unsigned char Get(int x, int y)
   return map.m[map.w*y+x];
 }
 
-int GetRoom(int x, int y)
+int
+GetRoom (int x, int y)
 {
-  if (x < 0) return -1;
-  if (y < 0) return -1;
-  if (x >= map.w) return -1;
-  if (y >= map.h) return -1;
-	
-  return map.r[map.w*y+x];
+  if (x < 0 
+      || y < 0
+      || x >= map.w
+      || y >= map.h)
+    return -1;
+
+  return map.r[map.w * y + x];
 }
 
-int GetVisited(int x, int y)
+int
+GetVisited (int x, int y)
 {
-  if (x < 0) return 0;
-  if (y < 0) return 0;
-  if (x >= map.w) return 0;
-  if (y >= map.h) return 0;
-	
-  return rooms[GetRoom(x, y)].visited;
+  /* Not a valid room. */
+  if (x < 0 
+      || y < 0
+      || x >= map.w
+      || y >= map.h
+      || GetRoom (x, y) == -1)
+    return 0;
+
+  return rooms[GetRoom (x, y)].visited;
 }
 
 void Paint(int xp, int yp, int w, int h, char *fname)
@@ -376,7 +383,7 @@ void Paint(int xp, int yp, int w, int h, char *fname)
 	
   for (y = 0; y < h; y++) {
     for (x = 0; x < w; x++) {
-      Put(x+xp, y+yp, fgetc(fp), GetRoom(x+xp, y+yp));
+      Put(x+xp, y+yp, fgetc(fp), GetRoom (x + xp, y + yp));
     }
   }
   fclose(fp);

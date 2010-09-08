@@ -540,28 +540,29 @@ HandleEvents(void)
     }	
 }
 
-void DrawTile(int x, int y, int off_x, int off_y, int hide_not_visited, int fog_of_war)
+void
+DrawTile(int x, int y, int off_x, int off_y, int hide_not_visited, 
+         int fog_of_war)
 {
   SDL_Rect tilerec, screenrec;
   int i;
   int resolve_x, resolve_y;
 
-  static SDL_Surface *tiles = NULL;
-  static SDL_Surface *fog = NULL;
+  static SDL_Surface *tiles = NULL; /**< Normal tile set. */
+  static SDL_Surface *fog = NULL;   /**< Fog-shaded tile set. */
 
-  if (tiles == NULL) {
-    Uint8 *pp;
+  if (tiles == NULL)
+    {
+      Uint8 *pp;
 
-    tiles = IMG_Load(IMG_TILESET);
-    fog = IMG_Load(IMG_TILESET);
+      tiles = IMG_Load(IMG_TILESET);
+      fog = IMG_Load(IMG_TILESET);
 				
-    pp = fog->pixels;
+      pp = fog->pixels;
 
-    for (i = 0; i < fog->w*fog->h; i++) {
-      *pp = *pp / 2 + 128;
-      pp++;
+      for (i = 0; i < fog->w*fog->h; i++, pp++)
+        *pp = *pp / 2 + 128;
     }
-  }
 
   resolve_x = x + (off_x/32);
   resolve_y = y + (off_y/32);
