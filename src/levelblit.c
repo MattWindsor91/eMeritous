@@ -972,12 +972,6 @@ void DrawShield()
   }
 }
 
-void ST_Teleport()
-{
-}
-
-
-
 void RoomTreasure(int room, int typ)
 {
   int treasure;
