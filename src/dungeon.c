@@ -78,6 +78,59 @@ void lock_doors(int r)
   /*printf("locked %d doors\n", rcount); */
 }
 
+void
+kill_player(void)
+{
+  int lost_gems;
+  int rg_x, rg_y, rg_v;
+
+  player.hp--;
+				
+  if (player.hp <= 0)
+    {
+      if (!training)
+        player.lives--;
+
+      lost_gems = player.crystals / 3;
+      player.crystals -= lost_gems;
+
+      lost_gems = lost_gems * 95 / 100;
+
+      while (lost_gems > 0)
+        {
+          rg_x = (rooms[player_room].x * 32 + 32
+                  + rand () % (rooms[player_room].w * 32 - 64));
+          rg_y = (rooms[player_room].y * 32 + 32
+                  + rand () % (rooms[player_room].h * 32 - 64));
+          rg_v = rand () % (lost_gems / 4 + 2);
+                  
+          CreateGem (rg_x, rg_y, player_room, rg_v);
+          lost_gems -= rg_v;
+        }
+		
+      player_dying = 0;
+      shield_hp = 0;
+			
+      if (current_boss == BOSS_FINAL
+          && boss_fight_mode != BSTA_NONE)
+        {
+          player.x = enter_room_x;
+          player.y = enter_room_y;
+          prv_player_room = 1;
+        }
+      else
+        {
+          player.x = checkpoint_x;
+          player.y = checkpoint_y;
+        }
+
+      scroll_home = 1;
+      CircuitBullets (player.x, player.y, 100);
+      player.hp = 3 + (player.has_agate_knife) * 3;
+    }
+  else
+    player_dying = 0;
+}
 
 int
 play_dungeon(char *fname)
@@ -88,8 +141,7 @@ play_dungeon(char *fname)
   int off_x, off_y;
   int t = 0;
   int i, j;
-  int lost_gems;
-  int rg_x, rg_y, rg_v;
+
   int max_dist;
   int last_killed = 0;
   int n_arcs = 0;
@@ -143,54 +195,8 @@ play_dungeon(char *fname)
         {
           /* Handle HP changes. */
           if (player_dying > 30)
-            {
-              player.hp--;
-				
-              if (player.hp <= 0)
-                {
-                  if (!training)
-                    player.lives--;
-
-                  lost_gems = player.crystals / 3;
-                  player.crystals -= lost_gems;
-
-                  lost_gems = lost_gems * 95 / 100;
-
-                  while (lost_gems > 0)
-                    {
-                      rg_x = (rooms[player_room].x * 32 + 32
-                              + rand () % (rooms[player_room].w * 32 - 64));
-                      rg_y = (rooms[player_room].y * 32 + 32
-                              + rand () % (rooms[player_room].h * 32 - 64));
-                      rg_v = rand () % (lost_gems / 4 + 2);
-                  
-                      CreateGem (rg_x, rg_y, player_room, rg_v);
-                      lost_gems -= rg_v;
-                    }
-		
-                  player_dying = 0;
-                  shield_hp = 0;
-			
-                  if (current_boss == BOSS_FINAL
-                      && boss_fight_mode != BSTA_NONE)
-                    {
-                      player.x = enter_room_x;
-                      player.y = enter_room_y;
-                      prv_player_room = 1;
-                    }
-                  else
-                    {
-                      player.x = checkpoint_x;
-                      player.y = checkpoint_y;
-                    }
-
-                  scroll_home = 1;
-                  CircuitBullets (player.x, player.y, 100);
-                  player.hp = 3 + (player.has_agate_knife) * 3;
-                }
-              else
-                player_dying = 0;
-            }
+            kill_player ();
+          
         }
 		
       circuit_size = 250 + 50 * (player.circuit_charge + player.circuit_refill);

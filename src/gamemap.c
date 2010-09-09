@@ -147,6 +147,7 @@ void DisplayAutomap()
   int rw, rh;
   int tile;
   int nearest_checkpoint;
+  char icon;
   unsigned char col;
   unsigned char xcol = 0;
   static int t = 0;
@@ -261,41 +262,45 @@ void DisplayAutomap()
           }
           col = automap_cols[TileData[tile].Type];
           DrawRect(df_x, df_y, 8, 8, col ^ xcol);
-					
-          switch (tile) {
-          case 25:
-            DrawRect(df_x, df_y, 8, 8, 192 ^ xcol);
-            draw_char(df_x, df_y, '*', 0 ^ xcol);
-            break;
-          case 26:
-            DrawRect(df_x, df_y, 8, 8, 192 ^ xcol);
-            draw_char(df_x, df_y, '+', 0 ^ xcol);
-            break;
-          case 28:
-            DrawRect(df_x, df_y, 8, 8, 192 ^ xcol);
-            draw_char(df_x, df_y, 'S', 0 ^ xcol);
-            break;
-          case 29:
-            DrawRect(df_x, df_y, 8, 8, 192 ^ xcol);
-            draw_char(df_x, df_y, 'C', 0 ^ xcol);
-            break;
-          case 30:
-            DrawRect(df_x, df_y, 8, 8, 192 ^ xcol);
-            draw_char(df_x, df_y, 'R', 0 ^ xcol);
-            break;
-          case 31:
-            DrawRect(df_x, df_y, 8, 8, 192 ^ xcol);
-            draw_char(df_x, df_y, 'S', 0 ^ xcol);
-            break;
-          case 32:
-            DrawRect(df_x, df_y, 8, 8, 192 ^ xcol);
-            draw_char(df_x, df_y, 29, 0 ^ xcol);
-            break;
-          case 53:
-            DrawRect(df_x, df_y, 8, 8, 192 ^ xcol);
-            draw_char(df_x, df_y, 28, 0 ^ xcol);
-            break;
-          }
+	  
+          /* Special tiles. */
+          if ((tile >= TILE_CHECKPOINT && tile <= TILE_CRYSTAL)
+              || tile == 53)
+            {
+              switch (tile)
+                {
+                case TILE_CHECKPOINT:
+                  icon = '*';
+                  break;
+                case TILE_CHEST:
+                  icon = '+';
+                  break;
+                case TILE_CHEST_OPEN:
+                  icon = '.';
+                  break;
+                case TILE_SHIELD_UP:
+                  icon = 'S';
+                  break;
+                case TILE_CHARGE_UP:
+                  icon = 'C';
+                  break;
+                case TILE_REFILL_UP:
+                  icon = 'R';
+                  break;
+                case TILE_SAVE:
+                  icon = 'S';
+                  break;
+                case TILE_CRYSTAL:
+                  icon = 29;
+                  break;
+                case 53:
+                  icon = 28;
+                  break;
+                }
+
+              DrawRect (df_x, df_y, 8, 8, 192 ^ xcol);
+              draw_char (df_x, df_y, icon, 0 ^ xcol);
+            }
 					
           if (tile < 12) {
             DrawRect(df_x, df_y, 8, 8, 0 ^ xcol);

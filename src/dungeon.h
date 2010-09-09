@@ -24,11 +24,12 @@
 #ifndef __DUNGEON_H__
 #define __DUNGEON_H__
 
-enum {
-  /* Room types */
-  ROOM_BOSS = 2,         /**< Normal boss room. */
-  ROOM_ART_CHALLENGE = 3 /**< Artifact Challenge room. */
-};
+enum
+  {
+    /* Room types */
+    ROOM_BOSS = 2,         /**< Normal boss room. */
+    ROOM_ART_CHALLENGE = 3 /**< Artifact Challenge room. */
+  };
 
 #define MIN(x, y) (((x) < (y) ? (x) : (y)))
 
@@ -39,8 +40,26 @@ extern int opening_door_i, opening_door_n;
 extern int release_x, release_y;
 extern int release_str;
 
-void lock_doors(int r);
+/** Lock all the doors in a room.
+ *
+ *  @int r  Room ID to lock.
+ */
+void
+lock_doors (int r);
 
-int play_dungeon(char *fname);
+/** Cause the player to lose a life. */
+void
+kill_player (void);
+
+/** Actually play the game.
+ *
+ *  @todo split this into more functions.
+ *
+ *  @param fname  Name of the file to try loading the game from.
+ *
+ *  @return ???
+ */
+int
+play_dungeon(char *fname);
 
 #endif /* __DUNGEON_H__ */
