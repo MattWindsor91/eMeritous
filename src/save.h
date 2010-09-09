@@ -28,14 +28,16 @@
 
 typedef struct SaveFile SaveFile;
 
-struct SaveFile {
+struct SaveFile
+{
   gzFile *ptr; /**< Actual file pointer. */
   int pos;     /**< Position in file. */
 };
 
 extern int game_load;
 
-void DoSaveGame(void);
+void
+DoSaveGame (void);
 
 /** Read 8 bits from a save file.
  *
@@ -43,16 +45,18 @@ void DoSaveGame(void);
  *
  *  @return   The byte read from the file.
  */
-unsigned char s_read8(SaveFile *f);
 
+unsigned char
+save_file_read_char (SaveFile *f);
 
 /** Write 8 bits to a save file.
  *
  *  @param f  The SaveFile to write to.
  *  @param i  The byte, in unsigned char format, to write.
  */
-void s_write8(SaveFile *f, unsigned char i);
 
+void
+save_file_write_char (SaveFile *f, unsigned char i);
 
 /** Read 32 bits from a save file.
  *
@@ -60,15 +64,16 @@ void s_write8(SaveFile *f, unsigned char i);
  *
  *  @return  The integer read from the file.
  */
-int s_read32(SaveFile *f);
 
+int
+save_file_read_int (SaveFile *f);
 
 /** Write an integer to the open GZipped file.
  *
  *  @param f  The SaveFile to write to.
  *  @param i  The integer value to write.
  */
-void s_write32(SaveFile *f, int i);
+void save_file_write_int (SaveFile *f, int i);
 
 
 /** Read a floating point number from the open GZipped file.
@@ -77,7 +82,7 @@ void s_write32(SaveFile *f, int i);
  *
  *  @return  The float read from the file.
  */
-float s_readf(SaveFile *f);
+float save_file_read_float (SaveFile *f);
 
 
 /** Write a floating point number to the open GZipped file.
@@ -85,7 +90,7 @@ float s_readf(SaveFile *f);
  *  @param f  The SaveFile to write to.
  *  @param i  The float to write to the file.
  */
-void s_writef(SaveFile *f, float i);
+void save_file_write_float (SaveFile *f, float i);
 
 /* Deprecation block */
 
@@ -93,7 +98,7 @@ void s_writef(SaveFile *f, float i);
  *
  *  @return  The byte read from the file.
  */
-unsigned char FRchar(void);
+unsigned char FRChar(void);
 
 
 /** Write a byte to the open GZipped file.

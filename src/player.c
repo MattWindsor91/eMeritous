@@ -35,34 +35,34 @@ void read_player_data(SaveFile *f, struct PlayerData *p)
 {
   int i;
 
-  expired_ms        = s_read32(f);
-  p->x              = s_read32(f);
-  p->y              = s_read32(f);
-  scroll_x          = s_read32(f);
-  scroll_y          = s_read32(f);
-  magic_circuit     = s_read32(f);
-  checkpoint_x      = s_read32(f);
-  checkpoint_y      = s_read32(f);
-  player_walk_speed = s_read32(f);
-  wlk_wait          = s_read32(f);
-  p->circuit_charge = s_read32(f);
-  p->circuit_refill = s_read32(f);
-  explored          = s_read32(f);
-  p->reflect_shield = s_read32(f);
-  shield_recover    = s_read32(f);
-  shield_hp         = s_read32(f);
-  p->crystals       = s_read32(f);
-  checkpoints_found = s_read32(f);
-  p->hp             = s_read32(f);
-  p->lives          = s_read32(f);
-  p->lives_part     = s_read32(f);
-  current_boss      = s_read32(f);
-  training          = s_read32(f);
+  expired_ms        = save_file_read_int (f);
+  p->x              = save_file_read_int (f);
+  p->y              = save_file_read_int (f);
+  scroll_x          = save_file_read_int (f);
+  scroll_y          = save_file_read_int (f);
+  magic_circuit     = save_file_read_int (f);
+  checkpoint_x      = save_file_read_int (f);
+  checkpoint_y      = save_file_read_int (f);
+  player_walk_speed = save_file_read_int (f);
+  wlk_wait          = save_file_read_int (f);
+  p->circuit_charge = save_file_read_int (f);
+  p->circuit_refill = save_file_read_int (f);
+  explored          = save_file_read_int (f);
+  p->reflect_shield = save_file_read_int (f);
+  shield_recover    = save_file_read_int (f);
+  shield_hp         = save_file_read_int (f);
+  p->crystals       = save_file_read_int (f);
+  checkpoints_found = save_file_read_int (f);
+  p->hp             = save_file_read_int (f);
+  p->lives          = save_file_read_int (f);
+  p->lives_part     = save_file_read_int (f);
+  current_boss      = save_file_read_int (f);
+  training          = save_file_read_int (f);
 
-  agate_knife_loc   = s_read32(f);
+  agate_knife_loc   = save_file_read_int (f);
 
   for (i = 0; i < 12; i++) {
-    artifacts[i] = s_read8(f);
+    artifacts[i] = save_file_read_char (f);
   }
 
   /* In previous versions, whether or not the Agate Knife was held by 
@@ -83,33 +83,33 @@ void write_player_data(SaveFile *f, struct PlayerData *p)
 {
   int i;
 
-  FWInt(expired_ms);
-  FWInt(checkpoint_x);
-  FWInt(checkpoint_y);
-  FWInt(scroll_x);
-  FWInt(scroll_y);
-  FWInt(magic_circuit);
-  FWInt(checkpoint_x);
-  FWInt(checkpoint_y);
-  FWInt(player_walk_speed);
-  FWInt(wlk_wait);
-  FWInt(p->circuit_charge);
-  FWInt(p->circuit_refill);
-  FWInt(explored);
-  FWInt(p->reflect_shield);
-  FWInt(shield_recover);
-  FWInt(shield_hp);
-  FWInt(p->crystals);
-  FWInt(checkpoints_found);
-  FWInt(p->hp);
-  FWInt(p->lives);
-  FWInt(p->lives_part);
-  FWInt(current_boss);
-  FWInt(training);
-  FWInt(agate_knife_loc);
+  save_file_write_int (f, expired_ms);
+  save_file_write_int (f, checkpoint_x);
+  save_file_write_int (f, checkpoint_y);
+  save_file_write_int (f, scroll_x);
+  save_file_write_int (f, scroll_y);
+  save_file_write_int (f, magic_circuit);
+  save_file_write_int (f, checkpoint_x);
+  save_file_write_int (f, checkpoint_y);
+  save_file_write_int (f, player_walk_speed);
+  save_file_write_int (f, wlk_wait);
+  save_file_write_int (f, p->circuit_charge);
+  save_file_write_int (f, p->circuit_refill);
+  save_file_write_int (f, explored);
+  save_file_write_int (f, p->reflect_shield);
+  save_file_write_int (f, shield_recover);
+  save_file_write_int (f, shield_hp);
+  save_file_write_int (f, p->crystals);
+  save_file_write_int (f, checkpoints_found);
+  save_file_write_int (f, p->hp);
+  save_file_write_int (f, p->lives);
+  save_file_write_int (f, p->lives_part);
+  save_file_write_int (f, current_boss);
+  save_file_write_int (f, training);
+  save_file_write_int (f, agate_knife_loc);
 
   for (i = 0; i < 12; i++) {
-    FWChar(artifacts[i]);
+    save_file_write_char (f, artifacts[i]);
   }
 }
 

@@ -21,6 +21,7 @@
  *                                                                        *
  **************************************************************************/
 
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -46,11 +47,12 @@ unsigned char lchar;
 int fpos = 0;
 
 /* Read a byte from the open GZipped file. */
-unsigned char s_read8(SaveFile *f)
+unsigned char
+save_file_read_char (SaveFile *f)
 {
   unsigned char c;
 
-  c = gzgetc(f->ptr);
+  c = gzgetc (f->ptr);
   c ^= 0x55;
   c ^= f->pos & 0xFF;
 
@@ -61,30 +63,34 @@ unsigned char s_read8(SaveFile *f)
 
 
 /* Read a byte from the open GZipped file. */
-void s_write8(SaveFile *f, unsigned char i)
+void
+save_file_write_char (SaveFile *f, unsigned char i)
 {
   unsigned char c;
 
   c = i;
   c ^= 0x55;
   c ^= f->pos & 0xFF;
+  gzputc (f->ptr, c);
+
   lchar = c;
   f->pos++;
-  gzputc(f->ptr, c);
 }
 
 
 /* Read an integer from the open GZipped file. */
-int s_read32(SaveFile *f)
+int
+save_file_read_int (SaveFile *f)
 {
   int val;
   int i, s;
 
-  i =  s_read8(f);
-  i |= s_read8(f) << 8;
-  i |= s_read8(f) << 16;
-  i |= s_read8(f) << 24;
-  s  = s_read8(f);
+  i =  save_file_read_char (f);
+  i |= save_file_read_char (f) << 8;
+  i |= save_file_read_char (f) << 16;
+  i |= save_file_read_char (f) << 24;
+  s  = save_file_read_char (f);
+
   val = i * (s ? -1 : 1);
 
   return val;
@@ -92,23 +98,25 @@ int s_read32(SaveFile *f)
 
 
 /* Write an integer from the open GZipped file. */
-void s_write32(SaveFile *f, int val)
+void
+save_file_write_int (SaveFile *f, int val)
 {
   int i, s;
-  i = abs(val);
+  i = abs (val);
   s = (val >= 0) ? 0 : 1;
 
-  s_write8(f, (i & 0xFF) >> 0);
-  s_write8(f, (i & 0xFF00) >> 8);
-  s_write8(f, (i & 0xFF0000) >> 16);
-  s_write8(f, (i & 0xFF000000) >> 24);
+  save_file_write_char (f, (i & 0xFF) >> 0);
+  save_file_write_char (f, (i & 0xFF00) >> 8);
+  save_file_write_char (f, (i & 0xFF0000) >> 16);
+  save_file_write_char (f, (i & 0xFF000000) >> 24);
 
-  s_write8(f, s);
+  save_file_write_char (f, s);
 }
 
 
 /* Read a floating point number from the open GZipped file. */
-float s_readf(SaveFile *f)
+float
+save_file_read_float (SaveFile *f)
 {
   float i;
   int num;
@@ -116,27 +124,29 @@ float s_readf(SaveFile *f)
 
   double f_frac;
 
-  num  = s_read32(f);
-  frac = s_read32(f);
+  num  = save_file_read_int (f);
+  frac = save_file_read_int (f);
 
-  f_frac = (double)frac / 2147483647.0;
+  f_frac = (double)frac / INT_MAX;
 
-  i = (float)num + (float)f_frac;
+  i = (float) num + (float) f_frac;
+
   return i;
 }
 
 
 /* Write a floating point number to the open GZipped file. */
-void s_writef(SaveFile *f, float i)
+void
+save_file_write_float (SaveFile *f, float i)
 {
   int num;
   int frac;
 
-  num = (int)(floorf(i));
-  s_write32(f, num);
-  frac = (int)((i - (float)num)*2147483647.0);
+  num = (int) (floorf (i));
+  save_file_write_int (f, num);
+  frac = (int) ((i - (float) num) * INT_MAX);
 
-  s_write32(f, frac);
+  save_file_write_int (f, frac);
 }
 
 
@@ -147,14 +157,14 @@ void s_writef(SaveFile *f, float i)
 /* Read a byte from the open GZipped file. */
 unsigned char FRChar(void)
 {
-  return s_read8(&save);
+  return save_file_read_char(&save);
 }
 
 
 /* Read a floating point number from the open GZipped file. */
 void FWChar(unsigned char i)
 {
-  s_write8(&save, i);
+  save_file_write_char(&save, i);
 }
 
 
@@ -227,36 +237,38 @@ void FWFloat(float i)
  * END DEPRECATION BLOCK *
  *************************/
 
-void SaveGame(const char *filename)
+void
+SaveGame (const char *filename)
 {
   lchar = 0x7c;
   fpos = 0;
 
-  save.ptr = Filefp = gzopen(filename, "wb9");
+  save.ptr = Filefp = gzopen (filename, "wb9");
   save.pos = 0;
 
-  s_write8(&save, 0x7C);
-  WriteMapData();
-  WriteCreatureData();
-  write_player_data(&save, &player);
+  save_file_write_char (&save, 0x7C);
+  WriteMapData ();
+  WriteCreatureData ();
+  write_player_data (&save, &player);
 
-  gzclose(Filefp);
+  gzclose (Filefp);
 }
 
 
-void LoadGame(const char *filename)
+void
+LoadGame (const char *filename)
 {
   unsigned char parity;
   fpos = 0;
   lchar = 0x7c;
 
-  save.ptr = Filefp = gzopen(filename, "rb");
+  save.ptr = Filefp = gzopen (filename, "rb");
   save.pos = 0;
 
-  parity = s_read8(&save);
+  parity = save_file_read_char (&save);
   if (parity != 0x7C) {
-    fprintf(stderr, "Parity byte in error (%x != 0x7C)\nAborting\n", parity);
-    exit(2);
+    fprintf (stderr, "Parity byte in error (%x != 0x7C)\nAborting\n", parity);
+    exit (2);
   }
   game_load = 1;
 }
