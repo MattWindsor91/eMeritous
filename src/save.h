@@ -30,11 +30,14 @@ typedef struct SaveFile SaveFile;
 
 struct SaveFile
 {
-  gzFile *ptr; /**< Actual file pointer. */
-  int pos;     /**< Position in file. */
+  gzFile *file;   /**< Actual file pointer. */
+  int position;   /**< Position in file. */
+  char last_char; /**< Last character written to file. */
 };
 
 extern int game_load;
+
+extern SaveFile save;
 
 void
 DoSaveGame (void);

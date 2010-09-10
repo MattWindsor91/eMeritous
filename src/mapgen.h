@@ -24,9 +24,13 @@
 #ifndef __MAPGEN_H__
 #define __MAPGEN_H__
 
+#include "save.h"
+
 enum {
   NUM_ROOMS = 3000 /**< Number of rooms to create. */
 };
+
+typedef struct GameLevel GameLevel;
 
 struct RoomConnection {
 	int x, y;
@@ -49,13 +53,15 @@ typedef struct {
 	struct RoomConnection *con;
 } Room;
 
-typedef struct {
-	int w, h;
-	unsigned char *m;
-	int *r;
-	int totalRooms;
+struct GameLevel
+{
+  int w, h;
+  unsigned char *m;
+  int *r;
+  int totalRooms;
+  Room rooms[NUM_ROOMS];
   /* Room *rooms; */
-} GameLevel;
+};
 
 extern GameLevel map;
 extern Room rooms[NUM_ROOMS];
@@ -68,8 +74,21 @@ int GetRoom(int x, int y);
 int GetVisited(int x, int y);
 extern int place_of_power;
 
-void WriteMapData();
-void ReadMapData();
+/** Write the map data to the given save file.
+ *
+ * @param f  The SaveFile to write the data to.
+ */
+
+void
+write_map_data (SaveFile *f);
+
+/** Read the map data from the given save file.
+ *
+ * @param f  The SaveFile to read the data from.
+ */
+
+void
+read_map_data (SaveFile *f);
 
 void DestroyDungeon();
 

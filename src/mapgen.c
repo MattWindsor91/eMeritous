@@ -68,47 +68,50 @@ int r_successes[4] = {0};
 
 unsigned char floortiles[4] = {12, 18, 19, 20};
 
-void WriteRoomData(Room *rm)
+void
+write_room_data (SaveFile *f, Room *rm)
 {
   struct RoomConnection *rt;
-  FWInt(rm->x);
-  FWInt(rm->y);
-  FWInt(rm->w);
-  FWInt(rm->h);
-  FWInt(rm->creator);
-  FWInt(rm->visited);
-  FWInt(rm->checkpoint);
-  FWInt(rm->s_dist);
-  FWInt(rm->connections);
-  FWInt(rm->room_type);
-  FWInt(rm->room_param);
-  rt = rm->con;
-  while (rt != NULL) {
-    FWInt(rt->x);
-    FWInt(rt->y);
-    FWInt(rt->x2);
-    FWInt(rt->y2);
-    FWInt(rt->c);
-    rt = rt->n;
-  }
+
+  save_file_write_int (f, rm->x);
+  save_file_write_int (f, rm->y);
+  save_file_write_int (f, rm->w);
+  save_file_write_int (f, rm->h);
+  save_file_write_int (f, rm->creator);
+  save_file_write_int (f, rm->visited);
+  save_file_write_int (f, rm->checkpoint);
+  save_file_write_int (f, rm->s_dist);
+  save_file_write_int (f, rm->connections);
+  save_file_write_int (f, rm->room_type);
+  save_file_write_int (f, rm->room_param);
+
+  for (rt = rm->con; rt != NULL; rt = rt->n)
+    {
+      save_file_write_int (f, rt->x);
+      save_file_write_int (f, rt->y);
+      save_file_write_int (f, rt->x2);
+      save_file_write_int (f, rt->y2);
+      save_file_write_int (f, rt->c);
+    }
 }
 
-void ReadRoomData(Room *rm)
+void
+read_room_data (SaveFile *f, Room *rm)
 {
   int i;
   struct RoomConnection *rt;
 	
-  rm->x = FRInt();
-  rm->y = FRInt();
-  rm->w = FRInt();
-  rm->h = FRInt();
-  rm->creator = FRInt();
-  rm->visited = FRInt();
-  rm->checkpoint = FRInt();
-  rm->s_dist = FRInt();
-  rm->connections = FRInt();
-  rm->room_type = FRInt();
-  rm->room_param = FRInt();
+  rm->x = save_file_read_int (f);
+  rm->y = save_file_read_int (f);
+  rm->w = save_file_read_int (f);
+  rm->h = save_file_read_int (f);
+  rm->creator = save_file_read_int (f);
+  rm->visited = save_file_read_int (f);
+  rm->checkpoint = save_file_read_int (f);
+  rm->s_dist = save_file_read_int (f);
+  rm->connections = save_file_read_int (f);
+  rm->room_type = save_file_read_int (f);
+  rm->room_param = save_file_read_int (f);
 	
   rm->con = NULL;
 	
@@ -116,62 +119,72 @@ void ReadRoomData(Room *rm)
 	
   for (i = 0; i < rm->connections; i++) {
     rt = rm->con;
-    rm->con = malloc(sizeof(struct RoomConnection));
-    rm->con->x = FRInt();
-    rm->con->y = FRInt();
-    rm->con->x2 = FRInt();
-    rm->con->y2 = FRInt();
-    rm->con->c = FRInt();
+    rm->con = malloc (sizeof (struct RoomConnection));
+    rm->con->x = save_file_read_int (f);
+    rm->con->y = save_file_read_int (f);
+    rm->con->x2 = save_file_read_int (f);
+    rm->con->y2 = save_file_read_int (f);
+    rm->con->c = save_file_read_int (f);
     rm->con->n = rt;
   }
 }
 
-void WriteMapData()
+/* Write map data to a save file. */
+
+void
+write_map_data (SaveFile *f)
 {
   int i;
 
-  FWInt(map.w);
-  FWInt(map.h);
-  FWInt(map.totalRooms);
-  FWInt(place_of_power);
-  for (i = 0; i < map.w*map.h; i++) {
-    FWChar(map.m[i]);
-    FWInt(map.r[i]);
-    if ((i % 7447) == 7446) {
-      SavingScreen(0, (float)i / (float)(map.w*map.h));
+  save_file_write_int (f, map.w);
+  save_file_write_int (f, map.h);
+  save_file_write_int (f, map.totalRooms);
+  save_file_write_int (f, place_of_power);
+
+  for (i = 0; i < map.w * map.h; i++)
+    {
+      save_file_write_char (f, map.m[i]);
+      save_file_write_int (f, map.r[i]);
+
+      if ((i % 7447) == 7446)
+        SavingScreen (0, (float)i / (float) (map.w * map.h));
     }
-  }
-  for (i = 0; i < map.totalRooms; i++) {
-    WriteRoomData(&rooms[i]);
-    if ((i % 85)==84) {
-      SavingScreen(1, (float)i / (float)map.totalRooms);
+
+  for (i = 0; i < map.totalRooms; i++)
+    {
+      write_room_data (f, &rooms[i]);
+
+      if ((i % 85) == 84)
+        SavingScreen (1, (float)i / (float) map.totalRooms);
     }
-  }
 }
 
-void ReadMapData()
+void
+read_map_data (SaveFile *f)
 {
   int i;
 
-  map.w = FRInt();
-  map.h = FRInt();
-  map.totalRooms = total_rooms = FRInt();
-  place_of_power = FRInt();
-  for (i = 0; i < map.w*map.h; i++) {
-    if ((i % 7447) == 7446) {
-      LoadingScreen(0, (float)i / (float)(map.w*map.h));
+  map.w = save_file_read_int (f);
+  map.h = save_file_read_int (f);
+  map.totalRooms = total_rooms = save_file_read_int (f);
+  place_of_power = save_file_read_int (f);
+
+  for (i = 0; i < map.w * map.h; i++)
+    {
+      map.m[i] = save_file_read_char (f);
+      map.r[i] = save_file_read_int (f);
+
+      if ((i % 7447) == 7446)
+        LoadingScreen(0, (float)i / (float)(map.w * map.h));
     }
-    map.m[i] = FRChar();
-    map.r[i] = FRInt();
-  }
-  LoadingScreen(0, 1);
-  for (i = 0; i < map.totalRooms; i++) {
-    ReadRoomData(&rooms[i]);
-    if ((i % 85) == 84) {
-      LoadingScreen(1, (float)i / (float)map.totalRooms);
+
+  for (i = 0; i < map.totalRooms; i++)
+    {
+      read_room_data (f, &rooms[i]);
+
+      if ((i % 85) == 84)
+        LoadingScreen (1, (float)i / (float) map.totalRooms);
     }
-  }
-  LoadingScreen(1, 1);
 }
 
 int rndval(int a, int b)
@@ -198,7 +211,8 @@ void RandomGenerateMap()
   int trying = 1;
   if (game_load) {
     NewLevel();
-    ReadMapData();
+    /* FIXME: de-globalise this. */
+    read_map_data (&save);
   } else {
     NewLevel();
     while (trying) {

@@ -43,21 +43,18 @@ SaveFile save;
 
 int game_load = 0;
 
-unsigned char lchar;
-int fpos = 0;
-
 /* Read a byte from the open GZipped file. */
 unsigned char
 save_file_read_char (SaveFile *f)
 {
   unsigned char c;
 
-  c = gzgetc (f->ptr);
+  c = gzgetc (f->file);
   c ^= 0x55;
-  c ^= f->pos & 0xFF;
+  c ^= f->position & 0xFF;
 
-  lchar = c;
-  f->pos++;
+  f->last_char = c;
+  f->position++;
   return c;
 }
 
@@ -70,11 +67,11 @@ save_file_write_char (SaveFile *f, unsigned char i)
 
   c = i;
   c ^= 0x55;
-  c ^= f->pos & 0xFF;
-  gzputc (f->ptr, c);
+  c ^= f->position & 0xFF;
+  gzputc (f->file, c);
 
-  lchar = c;
-  f->pos++;
+  f->last_char = c;
+  f->position++;
 }
 
 
@@ -240,14 +237,12 @@ void FWFloat(float i)
 void
 SaveGame (const char *filename)
 {
-  lchar = 0x7c;
-  fpos = 0;
-
-  save.ptr = Filefp = gzopen (filename, "wb9");
-  save.pos = 0;
+  save.file = Filefp = gzopen (filename, "wb9");
+  save.position = 0;
+  save.last_char = 0x7c;
 
   save_file_write_char (&save, 0x7C);
-  WriteMapData ();
+  write_map_data (&save);
   WriteCreatureData ();
   write_player_data (&save, &player);
 
@@ -259,11 +254,10 @@ void
 LoadGame (const char *filename)
 {
   unsigned char parity;
-  fpos = 0;
-  lchar = 0x7c;
 
-  save.ptr = Filefp = gzopen (filename, "rb");
-  save.pos = 0;
+  save.file = Filefp = gzopen (filename, "rb");
+  save.position = 0;
+  save.last_char = 0x7C;
 
   parity = save_file_read_char (&save);
   if (parity != 0x7C) {
