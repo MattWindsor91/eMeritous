@@ -35,39 +35,39 @@ void DrawStatusBar(int t)
     sprintf(buf, "Psi Crystals: %d", player.crystals);
     draw_text(3, 3, buf, 200);
 
-    sprintf(buf, "Explored: %.1f%% (%d/%d rooms)", 
-            (float)explored / (float)NUM_ROOMS * 100.0,
-            explored, NUM_ROOMS);
-    draw_text(3, 11, buf, 200);
+    sprintf (buf, "Explored: %.1f%% (%d/%d rooms)", 
+             (float) explored / (float) NUM_ROOMS * 100.0,
+             explored, NUM_ROOMS);
+    draw_text (3, 11, buf, 200);
 
-    sprintf(buf, "Cleared: %.1f%% (%d/%d monsters)", 
-            (float)killed_enemies / (float)total_enemies * 100.0,
-            killed_enemies, total_enemies);
+    sprintf (buf, "Cleared: %.1f%% (%d/%d monsters)", 
+             (float) killed_enemies / (float) total_enemies * 100.0,
+             killed_enemies, total_enemies);
     draw_text(3, 19, buf, 200);
 			
     /* The next three strings have a time-based glowing colour effect 
        if they can be upgraded (hence the ternary expression for colour). */
 
-    draw_text(316, 3, "Reflect shield", 
-              (player.crystals >= UpgradePrice(UP_REFLECT_SHIELD)) && 
-              (player.reflect_shield != 30) ? (231 + (t % 13) * 2) : 200);
-    DrawMeter(434, 3, player.reflect_shield);
+    draw_text (316, 3, "Reflect shield", 
+               (player.crystals >= get_upgrade_price (UP_REFLECT_SHIELD))
+               && (player.reflect_shield != 30) ? (231 + (t % 13) * 2) : 200);
+    DrawMeter (434, 3, player.reflect_shield);
 			
-    draw_text(316, 11, "Circuit charge",
-              (player.crystals >= UpgradePrice(UP_CIRCUIT_CHARGE)) && 
-              (player.circuit_charge != 30) ? (231 + (t % 13) * 2) : 200);
+    draw_text (316, 11, "Circuit charge",
+               (player.crystals >= get_upgrade_price (UP_CIRCUIT_CHARGE))
+               && (player.circuit_charge != 30) ? (231 + (t % 13) * 2) : 200);
     DrawMeter(434, 11, player.circuit_charge);
 			
     draw_text(316, 19, "Circuit refill",
-              (player.crystals >= UpgradePrice(UP_CIRCUIT_REFILL)) &&
-              (player.circuit_refill != 30) ? (231 + (t % 13) * 2) : 200);
+              (player.crystals >= get_upgrade_price (UP_CIRCUIT_REFILL))
+              && (player.circuit_refill != 30) ? (231 + (t % 13) * 2) : 200);
     DrawMeter(434, 19, player.circuit_refill);
 			
   } else {
-    draw_text(80, 11-6, "Use the movement keys to locate a checkpoint. Press ENTER to",
-              240);
-    draw_text(52, 11+6, "teleport to this checkpoint. Press ESCAPE or TAB once you are done.",
-              240);
+    draw_text (80, 11-6, "Use the movement keys to locate a checkpoint. Press ENTER to",
+               240);
+    draw_text (52, 11+6, "teleport to this checkpoint. Press ESCAPE or TAB once you are done.",
+               240);
   }
 		
 }

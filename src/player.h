@@ -121,8 +121,10 @@ void write_player_data(SaveFile *f, struct PlayerData *p);
  *
  *  @param type  The type of upgrade.
  *
- *  @return the price of an upgrade, in crystals.
+ *  @return the price of an upgrade, in PSI crystals.
  */
-int UpgradePrice(int type);
+
+int
+get_upgrade_price (int type);
 
 #endif /* __PLAYER_H__ */

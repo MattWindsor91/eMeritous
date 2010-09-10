@@ -137,8 +137,6 @@ float RandomDir()
   return (float)(rand()%256)*M_PI*2.0/256.0;
 }
 
-int UpgradePrice(int t);
-
 
 void ScrollTo(int x, int y);
 
@@ -1148,24 +1146,24 @@ void ActivateTile(unsigned char tile, int x, int y)
     break;
   case TILE_SHIELD_UP:
     if (player.reflect_shield >= 24) return;
-    if (player.crystals >= UpgradePrice(UP_REFLECT_SHIELD)) {
-      player.crystals -= UpgradePrice(UP_REFLECT_SHIELD);
+    if (player.crystals >= get_upgrade_price(UP_REFLECT_SHIELD)) {
+      player.crystals -= get_upgrade_price(UP_REFLECT_SHIELD);
       player.reflect_shield += 1;
       SND_Pos("dat/a/crystal.wav", 128, 0);
     }
     break;
   case TILE_CHARGE_UP:
     if (player.circuit_charge >= 24) return;
-    if (player.crystals >= UpgradePrice(UP_CIRCUIT_CHARGE)) {
-      player.crystals -= UpgradePrice(UP_CIRCUIT_CHARGE);
+    if (player.crystals >= get_upgrade_price(UP_CIRCUIT_CHARGE)) {
+      player.crystals -= get_upgrade_price(UP_CIRCUIT_CHARGE);
       player.circuit_charge += 1;
       SND_Pos("dat/a/crystal.wav", 128, 0);
     }
     break;
   case TILE_REFILL_UP:
     if (player.circuit_refill >= 24) return;
-    if (player.crystals >= UpgradePrice(UP_CIRCUIT_REFILL)) {
-      player.crystals -= UpgradePrice(UP_CIRCUIT_REFILL);
+    if (player.crystals >= get_upgrade_price(UP_CIRCUIT_REFILL)) {
+      player.crystals -= get_upgrade_price(UP_CIRCUIT_REFILL);
       player.circuit_refill += 1;
       SND_Pos("dat/a/crystal.wav", 128, 0);
     }
@@ -1367,7 +1365,7 @@ void SpecialTile(int x, int y)
       sprintf(message, "Your shield is already at full efficiency");
     } else {
       sprintf(message, "Press ENTER to upgrade shields (%d crystals)",
-              UpgradePrice(UP_REFLECT_SHIELD));
+              get_upgrade_price (UP_REFLECT_SHIELD));
     }
     break;
   case 29:
@@ -1375,7 +1373,7 @@ void SpecialTile(int x, int y)
       sprintf(message, "Your circuit charge rate is already at its highest");
     } else {
       sprintf(message, "Press ENTER to upgrade circuit charge (%d crystals)",
-              UpgradePrice(UP_CIRCUIT_CHARGE));
+              get_upgrade_price (UP_CIRCUIT_CHARGE));
     }
     break;
   case 30:
@@ -1383,7 +1381,7 @@ void SpecialTile(int x, int y)
       sprintf(message, "Your circuit refill rate is already at its highest");
     } else {
       sprintf(message, "Press ENTER to upgrade circuit refill (%d crystals)",
-              UpgradePrice(UP_CIRCUIT_REFILL));
+              get_upgrade_price (UP_CIRCUIT_REFILL));
     }
     break;
   case 31:

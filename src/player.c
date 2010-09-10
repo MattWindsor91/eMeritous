@@ -21,6 +21,8 @@
  *                                                                        *
  **************************************************************************/
 
+#include <assert.h>
+
 #include "player.h"
 #include "mapgen.h"
 #include "levelblit.h"
@@ -180,27 +182,33 @@ void PlayerDefaultStats(void)
 #endif
 }
 
-int UpgradePrice(int type)
+int
+get_upgrade_price (int type)
 {
   int price;
 
-  switch (type) {
-  case UP_REFLECT_SHIELD:
-    price = ((100 - (training * 50)) * player.reflect_shield + 
-             (5 << player.reflect_shield) * (5 - training * 2));
-    break;
-  case UP_CIRCUIT_CHARGE:
-    price = ((80 - (training * 40)) * player.circuit_charge + 
-             (5 << player.circuit_charge) * (4 - training * 2));
-    break;
-  case UP_CIRCUIT_REFILL:
-    price = ((80 - (training * 40)) * player.circuit_refill + 
-             (5 << player.circuit_refill) * (4 - training * 2));
-    break;
-  default:
-    price = 123;
-    break;
-  }
+  switch (type)
+    {
+    case UP_REFLECT_SHIELD:
+      price = ((100 - (training * 50)) * player.reflect_shield + 
+               (5 << player.reflect_shield) * (5 - training * 2));
+      break;
+    case UP_CIRCUIT_CHARGE:
+      price = ((80 - (training * 40)) * player.circuit_charge + 
+               (5 << player.circuit_charge) * (4 - training * 2));
+      break;
+    case UP_CIRCUIT_REFILL:
+      price = ((80 - (training * 40)) * player.circuit_refill + 
+               (5 << player.circuit_refill) * (4 - training * 2));
+      break;
+    default:
+      price = 0;
+      break;
+    }
+
+  /* A zero price should never happen.  (The default above shouldn't, 
+     either.) */
+  assert(price != 0);
 
   return price;
 }
