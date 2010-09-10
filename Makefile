@@ -19,9 +19,10 @@
 #   You should have received a copy of the GNU General Public License
 #   along with eMeritous.  If not, see <http://www.gnu.org/licenses/>.
 #
-LDFLAGS = `sdl-config --libs` -lSDL_image -lSDL_mixer -lz
-CCFLAGS = -O2 -Wall `sdl-config --cflags` -g -pedantic -DDEBUG_STATS -DNO_LOGO -ansi
-CC      = clang
+LDFLAGS  = `sdl-config --libs` -lSDL_image -lSDL_mixer -lz
+CCFLAGS  = -O2 -Wall `sdl-config --cflags` -g -pedantic -DDEBUG_STATS -DNO_LOGO -ansi
+CCFLAGS += -DWITH_SOUND
+CC       = clang
 #
 OBJS = 		src/main.o \
 		src/dungeon.o \
