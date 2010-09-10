@@ -31,6 +31,8 @@
 
 #include <SDL.h>
 
+#include "graphics.h"
+#include "screens.h"
 #include "boss.h"
 #include "mapgen.h"
 #include "save.h"
@@ -309,12 +311,12 @@ void SaveLevel()
       if (rooms[GetRoom(x, y)].room_type == 2) cl = 2;
       if (rooms[GetRoom(x, y)].room_type == 3) cl = 3;
 			
-      draw_text_ex(x*8, y*8, cs, cl, map_surf);
+      draw_map_text (x * 8, y * 8, cs, cl, map_surf);
     }
   }
   for (i = 0; i < NUM_ROOMS; i++) {
     sprintf(rnum, "%d", i);
-    draw_text_ex(rooms[i].x * 8, rooms[i].y * 8, rnum, 0, map_surf);
+    draw_map_text (rooms[i].x * 8, rooms[i].y * 8, rnum, 0, map_surf);
   }
 	
   SDL_SaveBMP(map_surf, "map.bmp");

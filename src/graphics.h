@@ -36,7 +36,8 @@ enum {
 };
 
 /** Initialise the text font. */
-void text_init(void);
+void
+text_init(void);
 
 
 /** Draw a character onto the screen.
@@ -46,8 +47,8 @@ void text_init(void);
  *  @param c      The character to draw.
  *  @param tcol   The colour of the character (8-bit greyscale).
  */
-void draw_char(int cur_x, int cur_y, int c, Uint8 tcol);
-
+void
+draw_char (int cur_x, int cur_y, int c, Uint8 tcol);
 
 /** Draw a text string onto the screen.
  *
@@ -59,10 +60,13 @@ void draw_char(int cur_x, int cur_y, int c, Uint8 tcol);
  *  @param str   The string to draw onto the screen.
  *  @param tcol  The colour of the character (8-bit greyscale).
  */
-void draw_text(int x, int y, const char *str, Uint8 tcol);
+void
+draw_text (int x, int y, const char *str, Uint8 tcol);
 
-
-/** Draw text onto a surface. (?)
+/** Variant text drawing function used for map dumps.
+ *
+ *  As BMP map dumps seem to be a debug function, this function 
+ *  may be deprecatable.
  *
  *  @param x     X co-ordinate to start the draw from.
  *  @param y     Y co-ordinate to start the draw from.
@@ -71,7 +75,7 @@ void draw_text(int x, int y, const char *str, Uint8 tcol);
  *  @param srf   The surface to write the string to.
  */
 
-void draw_text_ex(int x, int y, const char *str, Uint8 tcol, SDL_Surface *srf);
-
+void
+draw_map_text (int x, int y, const char *str, Uint8 tcol, SDL_Surface *srf);
 
 #endif /* __GRAPHICS_H__ */
