@@ -502,7 +502,7 @@ void DrawStream(int t)
   if (t > 250) {
     if (t < 300) {
       if (t == 251) {
-        SND_CircuitRelease(1000);
+        play_circuit_release_sound (1000);
       }
       DrawCircle(320+32 - scr_x, 240 - scr_y, (t - 254) * 10, 255);
       DrawCircle(320+32 - scr_x, 240 - scr_y, (t - 252) * 10, 225);

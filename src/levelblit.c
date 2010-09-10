@@ -48,11 +48,6 @@
 #include "ending.h"
 #include "screens.h"
 
-
-
-
-
-
 int expired_ms = 0;
 int frame_len = 33;
 int WriteBitmaps = 0;
@@ -65,11 +60,7 @@ int voluntary_exit = 0;
 int tele_select = 0;
 int enter_room_x = 0, enter_room_y = 0;
 
-
 int agate_knife_loc = -1;
-
-
-
 
 void DrawLevel(int off_x, int off_y, int hide_not_visited, int fog_of_war);
 void DrawPlayer(int x, int y, int pl_dir, int pl_frm);
@@ -94,7 +85,6 @@ int magic_circuit;
 int circuit_range;
 int release_range;
 
-
 int shield_hp;
 int shield_recover;
 int checkpoints_found;
@@ -109,8 +99,6 @@ int wlk_wait;
 int circuit_release;
 int scroll_home;
 int enter_pressed;
-
-
 
 int checkpoint_x;
 int checkpoint_y;
@@ -137,10 +125,7 @@ float RandomDir()
   return (float)(rand()%256)*M_PI*2.0/256.0;
 }
 
-
 void ScrollTo(int x, int y);
-
-
 
 void SetGreyscalePalette();
 void SetTonedPalette(float pct);
@@ -184,18 +169,11 @@ void EndCycle(int n)
   last_ticks = SDL_GetTicks();
 }
 
-/*int min(int x, int y)
-{
-  if (x < y) return x;
-  return y;
-  }*/
-
 void DummyEventPoll()
 {
   SDL_Event e;
   SDL_PollEvent(&e);
 }
-
 
 Uint8 Uint8_Bound(int c)
 {
@@ -295,8 +273,6 @@ void Arc(SDL_Surface *s, int x, int y, int r, float dir)
   }
 	
 }
-
-
 
 void UpRoom()
 {
@@ -539,8 +515,8 @@ HandleEvents(void)
 }
 
 void
-DrawTile(int x, int y, int off_x, int off_y, int hide_not_visited, 
-         int fog_of_war)
+DrawTile (int x, int y, int off_x, int off_y, int hide_not_visited, 
+          int fog_of_war)
 {
   SDL_Rect tilerec, screenrec;
   int i;
@@ -553,17 +529,17 @@ DrawTile(int x, int y, int off_x, int off_y, int hide_not_visited,
     {
       Uint8 *pp;
 
-      tiles = IMG_Load(IMG_TILESET);
-      fog = IMG_Load(IMG_TILESET);
+      tiles = IMG_Load (IMG_TILESET);
+      fog = IMG_Load (IMG_TILESET);
 				
       pp = fog->pixels;
 
-      for (i = 0; i < fog->w*fog->h; i++, pp++)
+      for (i = 0; i < fog->w * fog->h; i++, pp++)
         *pp = *pp / 2 + 128;
     }
 
-  resolve_x = x + (off_x/32);
-  resolve_y = y + (off_y/32);
+  resolve_x = x + (off_x / 32);
+  resolve_y = y + (off_y / 32);
 
   /* Don't bother with a tile blit if there isn't a tile here. */		
   if ((GetVisited(resolve_x, resolve_y) > 0) ||
@@ -585,11 +561,12 @@ DrawTile(int x, int y, int off_x, int off_y, int hide_not_visited,
   }
 }
 
-void DrawLevel(int off_x, int off_y, int hide_not_visited, int fog_of_war)
+void
+DrawLevel (int off_x, int off_y, int hide_not_visited, int fog_of_war)
 {
   int x, y;
 	
-  DrawRect(0, 0, SCREEN_W, SCREEN_H, BG_COLOUR);
+  DrawRect (0, 0, SCREEN_W, SCREEN_H, BG_COLOUR);
 	
   for (y = 0; y < 16; y++) {
     for (x = 0; x < 21; x++) {
@@ -766,7 +743,7 @@ void ActivateBossDoor(int x, int y)
     opening_door_i = 1;
     opening_door_n = rooms[GetRoom(bx, by)].room_param;
     if ((SDL_GetTicks() - bd_timer) > 100) {
-      SND_Pos("dat/a/crystal2.wav", 100, 0);
+      play_positioned_sound("dat/a/crystal2.wav", 100, 0);
       bd_timer = SDL_GetTicks();
     }
   }
@@ -874,11 +851,12 @@ void ReleaseCircuit()
   release_x = player.x;
   release_y = player.y;
   release_str = magic_circuit;
-  if (player.circuit_charge==30) {
+
+  if (player.circuit_charge == 30)
     release_str *= 1.25;
-  }
+
 	
-  SND_CircuitRelease(release_str);
+  play_circuit_release_sound (release_str);
   magic_circuit *= -1;
 }
 
@@ -982,7 +960,7 @@ void RoomTreasure(int room, int typ)
     artifacts[treasure] = 1;
     specialmessage = treasure + 1;
     specialmessagetimer = 30;
-    SND_Pos("dat/a/crystal2.wav", 128, 0);
+    play_positioned_sound("dat/a/crystal2.wav", 128, 0);
   }
   if (typ == 1) {
     /* Reward */
@@ -994,14 +972,14 @@ void RoomTreasure(int room, int typ)
         specialmessage = 20;
         player.crystals += rand()%((1 << (rooms[room].s_dist / 7)) * 1500);
         given_treasure = 1;
-        SND_Pos("dat/a/tone.wav", 128, 0);
+        play_positioned_sound("dat/a/tone.wav", 128, 0);
         break;
       case 1:
         if (player.reflect_shield <= MAX_UPGRADE) {
           specialmessage = 10;
           player.reflect_shield += 1;
           given_treasure = 1;
-          SND_Pos("dat/a/tone.wav", 128, 0);
+          play_positioned_sound("dat/a/tone.wav", 128, 0);
         }
         break;
       case 2:
@@ -1009,7 +987,7 @@ void RoomTreasure(int room, int typ)
           specialmessage = 11;
           player.circuit_charge += 1;
           given_treasure = 1;
-          SND_Pos("dat/a/tone.wav", 128, 0);
+          play_positioned_sound("dat/a/tone.wav", 128, 0);
         }
         break;
       case 3:
@@ -1017,7 +995,7 @@ void RoomTreasure(int room, int typ)
           specialmessage = 12;
           player.circuit_refill += 1;
           given_treasure = 1;
-          SND_Pos("dat/a/tone.wav", 128, 0);
+          play_positioned_sound("dat/a/tone.wav", 128, 0);
         }
         break;
       default:
@@ -1111,73 +1089,84 @@ void TeleportPlayerToNextRoom()
   scroll_home = 1;
 }
 
-void ActivateTile(unsigned char tile, int x, int y)
+void
+ActivateTile (unsigned char tile, int x, int y)
 {
   int c_room;
 	
   enter_pressed = 0;
-  switch (tile) {
-  case TILE_CHECKPOINT:
-    /* Cursed seal stops checkpoints working. */
-    if (artifacts[ART_CURSED_SEAL]) break;
+  switch (tile)
+    {
+    case TILE_CHECKPOINT:
+      /* Cursed seal stops checkpoints working. */
+      if (artifacts[ART_CURSED_SEAL])
+        break;
 
-    c_room = GetNearestCheckpoint(c_scroll_x, c_scroll_y);
-    if (tele_select) {
-      if (c_room != -1) {
-        if (c_room == player_room) {
-          TeleportPlayerToNextRoom();
-        } else {
-          TeleportPlayerToRoom(c_room);
+      c_room = GetNearestCheckpoint (c_scroll_x, c_scroll_y);
+      if (tele_select)
+        {
+          if (c_room != -1)
+            {
+              if (c_room == player_room)
+                TeleportPlayerToNextRoom ();
+              else
+                TeleportPlayerToRoom (c_room);
+            }
         }
-      }
-    } else {
-      map_enabled = 1;
-      game_paused = 1;
-      tele_select = 1;
+      else
+        {
+          map_enabled = 1;
+          game_paused = 1;
+          tele_select = 1;
 				
-      c_scroll_x = player.x;
-      c_scroll_y = player.y;
+          c_scroll_x = player.x;
+          c_scroll_y = player.y;
+        }			
+      break;
+    case TILE_CHEST:
+      RoomTreasure (GetRoom (x, y), (x + y) % 2);
+      Put (x, y, TILE_CHEST_OPEN, GetRoom(x, y));
+      break;
+    case TILE_SHIELD_UP:
+      if (player.reflect_shield >= 24)
+        return;
+      if (player.crystals >= get_upgrade_price(UP_REFLECT_SHIELD))
+        {
+          player.crystals -= get_upgrade_price(UP_REFLECT_SHIELD);
+          player.reflect_shield += 1;
+          play_sound (SND_UPGRADE, 128);
+        }
+      break;
+    case TILE_CHARGE_UP:
+      if (player.circuit_charge >= 24)
+        return;
+      if (player.crystals >= get_upgrade_price (UP_CIRCUIT_CHARGE))
+        {
+          player.crystals -= get_upgrade_price (UP_CIRCUIT_CHARGE);
+          player.circuit_charge += 1;
+          play_sound (SND_UPGRADE, 128);
+        }
+      break;
+    case TILE_REFILL_UP:
+      if (player.circuit_refill >= 24)
+        return;
+      if (player.crystals >= get_upgrade_price (UP_CIRCUIT_REFILL))
+        {
+          player.crystals -= get_upgrade_price (UP_CIRCUIT_REFILL);
+          player.circuit_refill += 1;
+          play_sound (SND_UPGRADE, 128);
+        }
+      break;
+    case TILE_SAVE:
+      DoSaveGame();
+      break;
+    case TILE_CRYSTAL:
+      CrystalSummon();
+      play_sound (SND_CRYSTAL_SUMMON, 80);
+      break;
+    default:
+      break;
     }
-			
-    break;
-  case TILE_CHEST:
-    RoomTreasure(GetRoom(x, y), (x+y)%2);
-    Put(x, y, TILE_CHEST_OPEN, GetRoom(x, y));
-    break;
-  case TILE_SHIELD_UP:
-    if (player.reflect_shield >= 24) return;
-    if (player.crystals >= get_upgrade_price(UP_REFLECT_SHIELD)) {
-      player.crystals -= get_upgrade_price(UP_REFLECT_SHIELD);
-      player.reflect_shield += 1;
-      SND_Pos("dat/a/crystal.wav", 128, 0);
-    }
-    break;
-  case TILE_CHARGE_UP:
-    if (player.circuit_charge >= 24) return;
-    if (player.crystals >= get_upgrade_price(UP_CIRCUIT_CHARGE)) {
-      player.crystals -= get_upgrade_price(UP_CIRCUIT_CHARGE);
-      player.circuit_charge += 1;
-      SND_Pos("dat/a/crystal.wav", 128, 0);
-    }
-    break;
-  case TILE_REFILL_UP:
-    if (player.circuit_refill >= 24) return;
-    if (player.crystals >= get_upgrade_price(UP_CIRCUIT_REFILL)) {
-      player.crystals -= get_upgrade_price(UP_CIRCUIT_REFILL);
-      player.circuit_refill += 1;
-      SND_Pos("dat/a/crystal.wav", 128, 0);
-    }
-    break;
-  case TILE_SAVE:
-    DoSaveGame();
-    break;
-  case TILE_CRYSTAL:
-    CrystalSummon();
-    SND_Pos("dat/a/crystal.wav", 80, 0);
-    break;
-  default:
-    break;
-  }
 }
 
 void CompassPoint()

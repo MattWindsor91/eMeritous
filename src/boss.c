@@ -517,7 +517,7 @@ void DrawPowerObject()
 						
             collect++;
             if (collect == 1) {
-              SND_Pos("dat/a/crystal2.wav", 100, 0);
+              play_sound (SND_GET_PSI_KEY, 100);
             }
             if (collect > 100) {
               collect = 0;
@@ -652,7 +652,7 @@ void TryHurtBoss(int x, int y, int range, int power)
     atk_power = 400 * power / circuit_size + power / 75;
     if (atk_power > boss_breakpoint) {
       boss_hp -= (atk_power - boss_breakpoint) * boss_dmgrate;
-      SND_Pos("dat/a/enemyhit.wav", 128, dist(x, y, boss_x, boss_y) / 4);
+      play_positioned_sound (SND_ENEMY_HIT, 128, dist (x, y, boss_x, boss_y) / 4);
       boss_flash = 40;
       if (boss_hp <= 0) {
         boss_new_life = 1;

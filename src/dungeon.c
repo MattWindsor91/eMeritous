@@ -353,17 +353,17 @@ play_dungeon(char *fname)
                   SDL_SetColorKey (agate_knife, SDL_SRCCOLORKEY | SDL_RLEACCEL, 0);
                 }
 
-              xpos = (int)((sin (agate_t * 1.33)*0.5+0.5) 
-                           * (float)room_w) + room_x;
-              ypos = (int)((cos (agate_t * 0.7)*0.5+0.5)
-                           * (float)room_h) + room_y;
+              xpos = (int)((sin (agate_t * 1.33) * 0.5 + 0.5) 
+                           * (float) room_w) + room_x;
+              ypos = (int)((cos (agate_t * 0.7) * 0.5 + 0.5)
+                           * (float) room_h) + room_y;
 					
               if (dist(player.x, player.y, xpos, ypos) < 20)
                 {
                   agate_knife_loc = -1;
                   specialmessage = 50;
                   specialmessagetimer = 150;
-                  SND_Pos ("dat/a/crystal2.wav", 128, 0);
+                  play_positioned_sound (SND_GET_AGATE_KNIFE, 128, 0);
 				
                   player.has_agate_knife = 1;
                   player.reflect_shield  = 30;

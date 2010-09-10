@@ -52,23 +52,90 @@ void InitAudio();
 void MusicUpdate();
 void TitleScreenMusic();
 void SND_CircuitRelease(int str);
-void SND_Pos(const char *filename, int vol, int dist);
+
+/** Get an available mixer channel.
+ *
+ *  @return  -1 for failure; otherwise, the ID of the channel retrieved, 
+ *           which can then be used by play_sound_on_channel.
+ */
+int
+get_mixer_channel(void);
+
+/** Play a sound on the specified mixer channel.
+ *
+ *  @warning  This function currently assumes that the requested 
+ *            mixer channel is empty.  This may change in the future.
+ *
+ *  @param filename  Name of the sound file to play.
+ *  @param volume    Volume of the sound.
+ *  @param channel   ID of the channel to play the file on (0-15).
+ *  @param loops     How many times the sound should loop 
+ *                   (0 for no loops; -1 for indefinite looping)
+ */
+
+void
+play_sound_on_channel (const char *filename, int volume,
+                       int channel, int loops);
+
+/** Play a sound.
+ *
+ *  @param filename  Name of the sound file to play.
+ *  @param volume    Volume of the sound.
+ */
+
+void
+play_sound (const char *filename, int volume);
+
+/** Play a sound, adjusting the volume to account for distance. 
+ *
+ *  @param filename  Name of the sound file to play.
+ *  @param volume    Unadjusted volume of the sound.
+ *  @param distance  Distance of the origin of the sound from the 
+ *                   player.
+ */
+
+void
+play_positioned_sound (const char *filename, int volume, int distance);
+
+/** Play the circuit release sound. 
+ *
+ *  The sound volume is determined by the given circuit strength.
+ *
+ *  @param str  Strength of the circuit.
+ */
+
+void
+play_circuit_release_sound (int strength);
 
 /* Sound file names (SND) and printf formats (SNDF).*/
 
-extern const char SND_CIRCUIT_CHARGE[];  /**< Circuit charge sound. */
-extern const char SND_CIRCUIT_RECOVER[]; /**< Circuit recover sound. */
-extern const char SND_CIRCUIT_RELEASE[]; /**< Circuit release sound. */
+extern const char SND_CIRCUIT_CHARGE[]; /**< Circuit charge sound. */
+extern const char SND_CIRCUIT_RECOVER[]; /**< Circuit recover
+                                            sound. */
+extern const char SND_CIRCUIT_RELEASE[]; /**< Circuit release
+                                            sound. */
 
-extern const char SND_GET_HP[];          /**< Player gets a heart sound. */
-extern const char SND_GET_LIFE[];        /**< Player gets a life sound. */
-extern const char SND_GET_LIFE_PART[];   /**< Player gets a life part sound. */
+extern const char SND_GET_HP[]; /**< Player gets a heart sound. */
+extern const char SND_GET_LIFE[]; /**< Player gets a life sound. */
+extern const char SND_GET_LIFE_PART[]; /**< Player gets a life part
+                                          sound. */
+extern const char SND_GET_PSI_KEY[]; /**< Player gets a PSI key
+                                        sound. */
+extern const char SND_GET_AGATE_KNIFE[]; /**< Player gets the Agate
+                                            Knife sound. */
 
-extern const char SND_PLAYER_HURT[];     /**< Player hurt sound. */
-extern const char SND_SHIELD_HIT[];      /**< Shield hit sound. */
+extern const char SND_UPGRADE[]; /**< Player upgrades a skill
+                                    sound. */
 
-extern const char SND_ENEMY_HIT[];       /**< Enemy hit sound. */
+extern const char SND_CRYSTAL_SUMMON[]; /**< Player uses a
+                                           crystal machine sound. */
 
-extern const char SNDF_ENEMY_SHOT[];      /**< Enemy shot sound (printf format). */
+extern const char SND_PLAYER_HURT[]; /**< Player hurt sound. */
+extern const char SND_SHIELD_HIT[]; /**< Shield hit sound. */
+
+extern const char SND_ENEMY_HIT[]; /**< Enemy hit sound. */
+
+extern const char SNDF_ENEMY_SHOT[]; /**< Enemy shot sound (printf
+                                        format). */
 
 #endif /* __AUDIO_H__ */

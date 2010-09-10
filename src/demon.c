@@ -1167,7 +1167,7 @@ void KillEnemy(struct enemy *t)
   ct = SDL_GetTicks();
 	
   if ((ct - lastkill) > 100) {
-    SND_Pos(SND_ENEMY_HIT, 128, PlayerDist(t->x, t->y));
+    play_positioned_sound (SND_ENEMY_HIT, 128, PlayerDist(t->x, t->y));
     lastkill = ct;
   }
 	
@@ -1238,7 +1238,7 @@ void EnemySound(int t, int dist)
 
   sprintf(fn, SNDF_ENEMY_SHOT, t);
 
-  SND_Pos(fn, ENEMY_SND_VOLS[t], dist);
+  play_positioned_sound (fn, ENEMY_SND_VOLS[t], dist);
   last_delay = ENEMY_SND_DELAYS[t];
 	
   last_e_sound = curr_e_sound;
@@ -1620,7 +1620,7 @@ void MoveBullet(struct bullet *e)
 								
                 if (PlayerDist(fx, fy) < 4 - (2 * artifacts[5])) {
                   player_dying = 1;
-                  SND_Pos(SND_PLAYER_HURT, 128, 0);
+                  play_sound (SND_PLAYER_HURT, 128);
                   e->dying = 1;
                   break;
                 }
@@ -1660,7 +1660,7 @@ void MoveBullet(struct bullet *e)
                 c_shield_hit_sound = SDL_GetTicks();
 								
                 if ((c_shield_hit_sound - 150) > last_shield_hit_sound) {
-                  SND_Pos(SND_SHIELD_HIT, 50, 0);
+                  play_sound (SND_SHIELD_HIT, 50);
                   last_shield_hit_sound = c_shield_hit_sound;
                 }
                 while (PlayerDist(e->x, e->y) < 30) {
@@ -1675,7 +1675,7 @@ void MoveBullet(struct bullet *e)
       if (e->dying == 0) {
         if (pdist < 6 - (2 * artifacts[5])) {
           if (player_dying == 0) {
-            SND_Pos(SND_PLAYER_HURT, 128, 0);
+            play_sound (SND_PLAYER_HURT, 128);
             player_dying = 1;
           }
         }
@@ -2155,11 +2155,11 @@ void MoveEntities()
             /* If the player has fewer than 3 hearts, or 6 if 
                their shield is at maximum, add a heart. */
             if (player.hp < (3 + (player.has_agate_knife) * 3)) {
-              SND_Pos(SND_GET_HP, 64, 0);
+              play_sound (SND_GET_HP, 64);
               player.hp++;
             } else {
               if (!training) {
-                SND_Pos(SND_GET_LIFE_PART, 64, 0);
+                play_sound (SND_GET_LIFE_PART, 64);
 			
                 /* Give more life parts if the player desperately needs
                    them. */
@@ -2176,7 +2176,7 @@ void MoveEntities()
                 if (player.lives_part >= LIFE_PART_MAX) {
                   player.lives_part -= LIFE_PART_MAX;
                   player.lives += 1;
-                  SND_Pos(SND_GET_LIFE, 100, 0);
+                  play_sound (SND_GET_LIFE, 100);
                 }
               }
             }

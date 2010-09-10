@@ -94,6 +94,12 @@ const char SND_GET_HP[] = "crystal.wav";
 const char SND_GET_LIFE[] = "crystal2.wav";
 const char SND_GET_LIFE_PART[] = "tone.wav";
 
+const char SND_GET_PSI_KEY[] = "crystal2.wav";
+const char SND_GET_AGATE_KNIFE[] = "crystal2.wav";
+
+const char SND_UPGRADE[] = "crystal.wav";
+const char SND_CRYSTAL_SUMMON[] = "crystal.wav";
+
 const char SND_PLAYER_HURT[] = "playerhurt.wav";
 const char SND_SHIELD_HIT[] = "shieldhit.wav";
 
@@ -118,29 +124,10 @@ void
 CircuitHum ();
 
 void
-MusicUpdate(void)
+MusicUpdate (void)
 {
   BackgroundMusic ();
   CircuitHum ();
-}
-
-void
-SND_Play_Channel(const char *filename, int vol, int ch, int loops)
-{
-#ifdef WITH_SOUND
-  {
-    char buffer[FN_BUFFER_LEN] = "\0";
-
-    strcat (buffer, PREFIX);
-    strcat (buffer, RES_DIR);
-    strcat (buffer, AUDIO_DIR);
-    strcat (buffer, filename);
-
-    c_sample[ch] = Mix_LoadWAV (buffer);
-    Mix_Volume (ch, vol);
-    Mix_PlayChannel (ch, c_sample[ch], loops);
-  }
-#endif /* WITH_SOUND */
 }
 
 void
@@ -174,7 +161,7 @@ CircuitHum (void)
                 Mix_FreeChunk (c_sample[0]);
               }
 
-            SND_Play_Channel (SND_CIRCUIT_CHARGE, hum_vol, 0, -1);
+            play_sound_on_channel (SND_CIRCUIT_CHARGE, hum_vol, 0, -1);
             hum_play = 1;
           }
       }
@@ -190,7 +177,7 @@ CircuitHum (void)
                 Mix_FreeChunk (c_sample[0]);
               }
               
-            SND_Play_Channel (SND_CIRCUIT_RECOVER, hum_vol, 0, -1);
+            play_sound_on_channel (SND_CIRCUIT_RECOVER, hum_vol, 0, -1);
             hum_play = 2;
           }
       }
@@ -370,8 +357,10 @@ BackgroundMusic (void)
 #endif /*WITH_SOUND */
 }
 
+/* Get an available mixer channel. */
+
 int
-SND_GetChannel (void)
+get_mixer_channel (void)
 {
 #ifdef WITH_SOUND
   {
@@ -392,43 +381,75 @@ SND_GetChannel (void)
     return -1;
   }
 #endif /* WITH_SOUND */
-  return 0;
+  return -1;
 }
 
+/* Play a sound on the specified mixer channel. */
+
 void
-SND_Play (const char *filename, int vol)
+play_sound_on_channel (const char *filename, int volume,
+                       int channel, int loops)
 {
 #ifdef WITH_SOUND
   {
-    int ch;
+    char buffer[FN_BUFFER_LEN] = "\0";
 
-    ch = SND_GetChannel ();
+    strcat (buffer, PREFIX);
+    strcat (buffer, RES_DIR);
+    strcat (buffer, AUDIO_DIR);
+    strcat (buffer, filename);
 
-    if (ch != -1)
-      SND_Play_Channel (filename, vol, ch, 0);
+    c_sample[channel] = Mix_LoadWAV (buffer);
+    Mix_Volume (channel, volume);
+    Mix_PlayChannel (channel, c_sample[channel], loops);
   }
 #endif /* WITH_SOUND */
 }
 
+/* Play a sound. */
+
 void
-SND_Pos (const char *filename, int vol, int dist)
+play_sound (const char *filename, int volume)
 {
 #ifdef WITH_SOUND
   {
-    int real_vol;
-    if (dist > 1600) return;
+    int channel;
+
+    channel = get_mixer_channel ();
+
+    if (channel != -1)
+      play_sound_on_channel (filename, volume, channel, 0);
+  }
+#endif /* WITH_SOUND */
+}
+
+/* Play a sound, adjusting the volume to account for distance. */
+
+void
+play_positioned_sound (const char *filename, int volume, int distance)
+{
+#ifdef WITH_SOUND
+  {
+    int real_volume;
+    if (distance > 1600)
+      return;
 	
-    real_vol = vol * (40 - (sqrt(dist))) / 40;
-    SND_Play (filename, real_vol);
+    real_volume = volume * (40 - (sqrt (distance))) / 40;
+    play_sound (filename, real_volume);
   }
 #endif /* WITH_SOUND */
 }
 
+/* Play the circuit release sound. */
+
 void
-SND_CircuitRelease (int str)
+play_circuit_release_sound (int strength)
 {
 #ifdef WITH_SOUND
-  SND_Play (SND_CIRCUIT_RELEASE,
-            sqrt(str * 2 + (str * 5300 / circuit_size) + (str > 100 ? 5300 : str * 53)));
+  {
+    play_sound (SND_CIRCUIT_RELEASE,
+                sqrt (strength * 2 + (strength * 5300 / circuit_size)
+                      + (strength > 100 ? 5300 : strength * 53)));
+  }
 #endif /* WITH_SOUND */
 }
