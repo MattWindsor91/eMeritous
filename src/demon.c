@@ -28,6 +28,7 @@
 #include <SDL_image.h>
 #include <assert.h>
 
+#include "dungeon.h"
 #include "demon.h"
 #include "graphics.h"
 #include "player.h"
@@ -228,7 +229,7 @@ int FindRoomDist(int room1, int room2)
 	
   searched[room1] = csearch;
 	
-  follow = rooms[room1].con;
+  follow = map.rooms[room1].con;
   while (follow != NULL) {
     if (searched[follow->c] != csearch) {
       cdist = GetRoomDist(follow->c, room2);
@@ -429,7 +430,7 @@ void ActivateVisited()
 
 
   for (i = 0; i < 3000; i++) {
-    if (rooms[i].visited) {
+    if (map.rooms[i].visited) {
       ActivateEnemies(i);
     }
     if (i % 10 == 9) {
@@ -468,11 +469,12 @@ struct enemy *CreateEnemy(int enemy_x, int enemy_y, int enemy_room)
 {
   int enemy_type;
 	
-  enemy_type = rand() % (rooms[enemy_room].s_dist / 5 + 1);
-  if (rooms[enemy_room].room_type == 5) enemy_type += rand()%3;
-  if (enemy_type > 8) enemy_type = rand()%3+6;
+  enemy_type = rand() % (map.rooms[enemy_room].s_dist / 5 + 1);
+  if (map.rooms[enemy_room].room_type == ROOM_PSI_KEY)
+    enemy_type += rand () % 3;
+  if (enemy_type > 8) enemy_type = rand () % 3 + 6;
 	
-  if (rooms[enemy_room].s_dist >= 15) {
+  if (map.rooms[enemy_room].s_dist >= 15) {
     if (rand()%64 == 0) {
       enemy_type = 9;
     }
@@ -491,7 +493,7 @@ struct enemy *CreateEnemyEx(int enemy_x, int enemy_y, int enemy_room, int enemy_
   new_enemy->y = enemy_y;
   new_enemy->room = enemy_room;
 	
-  rooms[enemy_room].enemies++;
+  map.rooms[enemy_room].enemies++;
   new_enemy->deaths = 0;
   new_enemy->t = rand() % 65536;
   new_enemy->active = 0;
@@ -604,7 +606,7 @@ struct enemy *CreateEnemyEx(int enemy_x, int enemy_y, int enemy_room, int enemy_
   case 9:
     new_enemy->image = enemy_sprites[0];
     new_enemy->lives = 1;
-    new_enemy->str = rooms[enemy_room].s_dist * 20;
+    new_enemy->str = map.rooms[enemy_room].s_dist * 20;
     new_enemy->speed = 3;
     new_enemy->fire_rate = 21;
     new_enemy->min_gems = 300;
@@ -630,7 +632,7 @@ struct enemy *CreateEnemyEx(int enemy_x, int enemy_y, int enemy_room, int enemy_
     new_enemy->speed *= 2;
   }
 	
-  if (rooms[new_enemy->room].room_type == 5) {
+  if (map.rooms[new_enemy->room].room_type == 5) {
     new_enemy->str = new_enemy->str * 3 / 2;
     if (new_enemy->str > 1500) new_enemy->str = 1500;
     new_enemy->fire_rate = new_enemy->fire_rate - 1;
@@ -848,8 +850,8 @@ void ActivateSingleEnemy(struct enemy *t)
 
 void XActivateSingleEnemy(struct enemy *t)
 {
-  if (rooms[t->room].room_type == 2) return;
-  if (rooms[t->room].room_type == 3) return;
+  if (map.rooms[t->room].room_type == 2) return;
+  if (map.rooms[t->room].room_type == 3) return;
 	
   ActivateSingleEnemy(t);
 }
@@ -890,23 +892,23 @@ void InitEnemies()
     if (current_boss > 0) SoupUpEnemies();
   } else {
     for (c_room = 1; c_room < 3000; c_room++) {
-      cr_x = rooms[c_room].x + 1;
-      cr_y = rooms[c_room].y + 1;
-      cr_w = rooms[c_room].w - 2;
-      cr_h = rooms[c_room].h - 2;
+      cr_x = map.rooms[c_room].x + 1;
+      cr_y = map.rooms[c_room].y + 1;
+      cr_w = map.rooms[c_room].w - 2;
+      cr_h = map.rooms[c_room].h - 2;
       room_size = cr_w * cr_h;
 			
       n_enemies = rand() % ((room_size / 4) + 1);
 			
-      if (rooms[c_room].room_type == 2) {
+      if (map.rooms[c_room].room_type == 2) {
         n_enemies = 0;
       }
 			
-      if (rooms[c_room].room_type == 3) {
+      if (map.rooms[c_room].room_type == 3) {
         n_enemies += (n_enemies + room_size) / 2;
       }
 			
-      if (rooms[c_room].room_type == 5) {
+      if (map.rooms[c_room].room_type == 5) {
         n_enemies = 50;
       }
 
@@ -973,7 +975,7 @@ void ZActivateEnemies(int room)
   }
 	
   /* 1/3 chance of activating each adjacent room */
-  rc = rooms[room].con;
+  rc = map.rooms[room].con;
   while (rc != NULL) {
     if (rand()%3 == 0) {
       ZActivateEnemies(rc->c);
@@ -989,8 +991,8 @@ void ActivateEnemies(int room)
 
   t = enemy_stack;
 	
-  if (rooms[room].s_dist > max_activate_dist) {
-    max_activate_dist = rooms[room].s_dist;
+  if (map.rooms[room].s_dist > max_activate_dist) {
+    max_activate_dist = map.rooms[room].s_dist;
   }
 
   while (t != NULL) {
@@ -998,7 +1000,7 @@ void ActivateEnemies(int room)
       if (t->active == 0) {
         ActivateSingleEnemy(t);
 				
-        if (rooms[room].room_type == 3) {
+        if (map.rooms[room].room_type == 3) {
           t->teleport_v = (rand() % 1500) + 50;
         }
       }
@@ -1007,10 +1009,10 @@ void ActivateEnemies(int room)
   }
 	
   /* 1/2 chance of activating each adjacent room */
-  rc = rooms[room].con;
+  rc = map.rooms[room].con;
   while (rc != NULL) {
     if (rand()%2 == 0) {
-      if ((rooms[rc->c].room_type != 2) && (rooms[rc->c].room_type != 3))  {
+      if ((map.rooms[rc->c].room_type != 2) && (map.rooms[rc->c].room_type != 3))  {
         ZActivateEnemies(rc->c);
       }
     }
@@ -1021,13 +1023,13 @@ void ActivateEnemies(int room)
 int CanEnterRoom(int room)
 {
   if (room == 0) return 0;
-  if (rooms[room].room_type == 2) return 0;
-  if (rooms[room].room_type == 3) return 0;
-  if (rooms[room].room_type == 5) return 0;
-  if (rooms[room].room_type == 6) return 0;
+  if (map.rooms[room].room_type == 2) return 0;
+  if (map.rooms[room].room_type == 3) return 0;
+  if (map.rooms[room].room_type == 5) return 0;
+  if (map.rooms[room].room_type == 6) return 0;
 
   if (artifacts[ART_CURSED_SEAL]) {
-    if (rooms[room].enemies > 3) {
+    if (map.rooms[room].enemies > 3) {
       return 0;
     }
   }
@@ -1037,10 +1039,10 @@ int CanEnterRoom(int room)
 int CanLeaveRoom(int room)
 {
   if (room == 0) return 0;
-  if (rooms[room].room_type == 2) return 0;
-  if (rooms[room].room_type == 3) return 0;
-  if (rooms[room].room_type == 5) return 0;
-  if (rooms[room].room_type == 6) return 0;
+  if (map.rooms[room].room_type == 2) return 0;
+  if (map.rooms[room].room_type == 3) return 0;
+  if (map.rooms[room].room_type == 5) return 0;
+  if (map.rooms[room].room_type == 6) return 0;
 
   return 1;
 }
@@ -1050,7 +1052,7 @@ int RecurseFind(struct enemy *e, int room, int depth)
   struct RoomConnection *follow;
   int dpth;
   int mindpth = 1000000;
-  follow = rooms[room].con;
+  follow = map.rooms[room].con;
 	
   if (CanEnterRoom(room) == 0) return 0;
 	
@@ -1092,7 +1094,7 @@ int FollowPlayer(struct enemy *e, struct RoomConnection **rcon)
   int rdepth[4000];
 	
   return 0;
-  follow = rooms[e->room].con;
+  follow = map.rooms[e->room].con;
 	
   while (follow != NULL) {
     if (follow->c == player_room) {
@@ -1106,7 +1108,7 @@ int FollowPlayer(struct enemy *e, struct RoomConnection **rcon)
   }
 	
   /* Recursively follow the player, to a certain depth */
-  follow = rooms[e->room].con;
+  follow = map.rooms[e->room].con;
   csearch = rand();
 	
   /* Are we already following the player into a room? */
@@ -1134,7 +1136,7 @@ int FollowPlayer(struct enemy *e, struct RoomConnection **rcon)
     follow = follow->n;
   }
   if (mindepth != 1000000) {
-    follow = rooms[e->room].con;
+    follow = map.rooms[e->room].con;
     while (follow != NULL) {
       if (CanEnterRoom(follow->c)) {
         newdepth = rdepth[follow->c];
@@ -1191,10 +1193,10 @@ void ArtifactRoomUnlock(int room)
 	
   /* unlock doors */
 	
-  for (y = 0; y < rooms[room].h; y++) {
-    for (x = 0; x < rooms[room].w; x++) {
-      rx = x + rooms[room].x;
-      ry = y + rooms[room].y;
+  for (y = 0; y < map.rooms[room].h; y++) {
+    for (x = 0; x < map.rooms[room].w; x++) {
+      rx = x + map.rooms[room].x;
+      ry = y + map.rooms[room].y;
       rt = Get(rx, ry);
 			
       if ((rt >= 21) && (rt <= 24)) {
@@ -1205,10 +1207,10 @@ void ArtifactRoomUnlock(int room)
 	
   /* place treasure */
   placed = 0;
-  tot_treasures = 2 + rand() % (rooms[room].s_dist / 8 + 1);
+  tot_treasures = 2 + rand() % (map.rooms[room].s_dist / 8 + 1);
   while (placed < tot_treasures) {
-    x = rooms[room].x + (rand() % (rooms[room].w - 2));
-    y = rooms[room].y + (rand() % (rooms[room].h - 2));
+    x = map.rooms[room].x + (rand() % (map.rooms[room].w - 2));
+    y = map.rooms[room].y + (rand() % (map.rooms[room].h - 2));
     /* printf("Attempting %d, %d\n", x, y); */
     if ((x+y)%2 == (placed>0)) {
       /* printf("Correct placement type\n"); */
@@ -1222,7 +1224,7 @@ void ArtifactRoomUnlock(int room)
   }
 	
   /* sign room */
-  rooms[room].room_type = 4;
+  map.rooms[room].room_type = 4;
 }
 
 void EnemySound(int t, int dist)
@@ -1419,7 +1421,7 @@ void MoveEnemy(struct enemy *e)
 						
             can_move = 1;
           } else {
-            con_traverse = rooms[e->room].con;
+            con_traverse = map.rooms[e->room].con;
             nearest = PlayerDist(e->x, e->y);
             rcon = NULL;
             while (con_traverse != NULL) {
@@ -1449,9 +1451,9 @@ void MoveEnemy(struct enemy *e)
               e->p_last_room = player_room;
               e->x = (rcon->x2 + (rcon->x2 - rcon->x))*32+16;
               e->y = (rcon->y2 + (rcon->y2 - rcon->y))*32+16;
-              rooms[e->room].enemies--;
+              map.rooms[e->room].enemies--;
               e->room = (rcon->c);
-              rooms[e->room].enemies++;
+              map.rooms[e->room].enemies++;
               e->curr_follow = -1;
 							
               e->m_exit = NULL;
@@ -1497,12 +1499,12 @@ void MoveEnemy(struct enemy *e)
         e->delete_me = 1;
         e->dying = 0;
         killed_enemies++;
-        rooms[e->room].enemies--;
+        map.rooms[e->room].enemies--;
         n_gems = e->min_gems + rand()%(e->max_gems - e->min_gems + 1);
         for (i = 0; i < n_gems; i++) {
           CreateGem(e->x - 16 + rand()%32, e->y - 16 + rand()%32, e->room, 1+rand()%4 + (artifacts[2]*rand()%3));
         }
-        if (rooms[e->room].room_type == 3) {
+        if (map.rooms[e->room].room_type == 3) {
           ArtifactRoomUnlock(e->room);
         }
       } else {
@@ -2054,7 +2056,7 @@ void DrawEntities()
   struct diamond *g;
   struct enemyloc *els;
 	
-  if ((rooms[player_room].room_type != 3)&&(rooms[player_room].room_type != 2)) {
+  if ((map.rooms[player_room].room_type != 3)&&(map.rooms[player_room].room_type != 2)) {
     /* Draw gems */
 	
     g = room_gems[player_room];
@@ -2105,7 +2107,7 @@ void DrawEntities()
           if ((t->x+24 >= scroll_x) && (t->y+24 >= scroll_y)) {
             if (t->x-24 <= (scroll_x+639)) {
               if (t->y-24 <= (scroll_y+479)) {
-                if ((rooms[t->room].room_type != 2) && (rooms[t->room].room_type != 3)) {
+                if ((map.rooms[t->room].room_type != 2) && (map.rooms[t->room].room_type != 3)) {
                   DrawInvisible(t->x, t->y);
                 }
               }
@@ -2137,7 +2139,7 @@ void MoveEntities()
   struct bullet *b_del;
   struct diamond *g_del;
 	
-  if ((rooms[player_room].room_type != 3)&&(rooms[player_room].room_type != 2)) {
+  if ((map.rooms[player_room].room_type != 3)&&(map.rooms[player_room].room_type != 2)) {
     /* gem stuff */
     g = room_gems[player_room];
     while (g != NULL) {
@@ -2193,7 +2195,7 @@ void MoveEntities()
   t = active_stack;
   while (t != NULL) {
     if (!t->delete_me) {
-      if ((rooms[t->room].room_type != 3) || (t->room == player_room))
+      if ((map.rooms[t->room].room_type != 3) || (t->room == player_room))
         MoveEnemy(t);
     }
     t = t->next_active;
@@ -2355,20 +2357,20 @@ void CrystalSummon()
 	
   while (g != NULL) {
     if (!g->delete_me) {
-      if (rooms[g->room].room_type != 3) {
+      if (map.rooms[g->room].room_type != 3) {
         g->room = player_room;
-        rg_x = rooms[player_room].x * 32 + 32 + rand()%(rooms[player_room].w*32-64);
-        rg_y = rooms[player_room].y * 32 + 32 + rand()%(rooms[player_room].h*32-64);
+        rg_x = map.rooms[player_room].x * 32 + 32 + rand()%(map.rooms[player_room].w*32-64);
+        rg_y = map.rooms[player_room].y * 32 + 32 + rand()%(map.rooms[player_room].h*32-64);
         if (player_room == 0) {
-          rg_x = (rooms[player_room].x+5) * 32 + 32 + rand()%(8*32);
-          rg_y = (rooms[player_room].y+5) * 32 + 32 + rand()%(5*32);
+          rg_x = (map.rooms[player_room].x+5) * 32 + 32 + rand()%(8*32);
+          rg_y = (map.rooms[player_room].y+5) * 32 + 32 + rand()%(5*32);
         }
         while (IsSolid(Get(rg_x/32, rg_y/32))) {
-          rg_x = rooms[player_room].x * 32 + 32 + rand()%(rooms[player_room].w*32-64);
-          rg_y = rooms[player_room].y * 32 + 32 + rand()%(rooms[player_room].h*32-64);
+          rg_x = map.rooms[player_room].x * 32 + 32 + rand()%(map.rooms[player_room].w*32-64);
+          rg_y = map.rooms[player_room].y * 32 + 32 + rand()%(map.rooms[player_room].h*32-64);
           if (player_room == 0) {
-            rg_x = (rooms[player_room].x+5) * 32 + 32 + rand()%(8*32);
-            rg_y = (rooms[player_room].y+5) * 32 + 32 + rand()%(5*32);
+            rg_x = (map.rooms[player_room].x+5) * 32 + 32 + rand()%(8*32);
+            rg_y = (map.rooms[player_room].y+5) * 32 + 32 + rand()%(5*32);
           }
         }
         g->x = rg_x;
@@ -2448,12 +2450,12 @@ void CullEnemies(int nth)
 	
   while (e != NULL) {
     if (e->delete_me == 0) {
-      if (rooms[e->room].room_type == 0) {
+      if (map.rooms[e->room].room_type == 0) {
         if ( (i % nth) == (nth - 1)) {
           e->delete_me = 1;
           killed_enemies++;
           e->dying = 0;
-          rooms[e->room].enemies--;
+          map.rooms[e->room].enemies--;
         }
         i++;
       }
@@ -2507,23 +2509,23 @@ void CurseSingleEnemy(struct enemy *e)
 	
   if (NActiveRooms == 0) {
     for (i = 0; i < NUM_ROOMS; i++) {
-      if ((rooms[i].room_type == 0) || (rooms[i].room_type == 4)) {
+      if ((map.rooms[i].room_type == 0) || (map.rooms[i].room_type == 4)) {
         ActiveRooms[NActiveRooms++] = i;
       }
     }
   }
 
   rm = ActiveRooms[rand()%NActiveRooms];
-  while ((rooms[rm].enemies > 3) || (rooms[rm].visited == 0)) {
+  while ((map.rooms[rm].enemies > 3) || (map.rooms[rm].visited == 0)) {
     rm = ActiveRooms[rand()%NActiveRooms];
   }
 
   /* Get room centre? */
-  e->x = rooms[rm].w * TILE_W / 2 + rooms[rm].x * TILE_W;
-  e->y = rooms[rm].h * TILE_H / 2 + rooms[rm].y * TILE_W;
-  rooms[e->room].enemies--;
+  e->x = map.rooms[rm].w * TILE_W / 2 + map.rooms[rm].x * TILE_W;
+  e->y = map.rooms[rm].h * TILE_H / 2 + map.rooms[rm].y * TILE_W;
+  map.rooms[e->room].enemies--;
   e->room = rm;
-  rooms[e->room].enemies++;
+  map.rooms[e->room].enemies++;
 	
   e->image = enemy_sprites[9];
   e->lives = 8;
@@ -2555,7 +2557,7 @@ void CurseEnemies()
         killed_enemies++;
 				
         e->dying = 0;
-        rooms[e->room].enemies--;
+        map.rooms[e->room].enemies--;
       }
       i++;
     }

@@ -63,10 +63,10 @@ void lock_doors(int r)
   int rt;
   int rcount = 0;
 	
-  for (y = 0; y < rooms[r].h; y++) {
-    for (x = 0; x < rooms[r].w; x++) {
-      rx = x + rooms[r].x;
-      ry = y + rooms[r].y;
+  for (y = 0; y < map.rooms[r].h; y++) {
+    for (x = 0; x < map.rooms[r].w; x++) {
+      rx = x + map.rooms[r].x;
+      ry = y + map.rooms[r].y;
       rt = Get(rx, ry);
 			
       if ((rt >= 13) && (rt <= 16)) {
@@ -98,10 +98,10 @@ kill_player(void)
 
       while (lost_gems > 0)
         {
-          rg_x = (rooms[player_room].x * 32 + 32
-                  + rand () % (rooms[player_room].w * 32 - 64));
-          rg_y = (rooms[player_room].y * 32 + 32
-                  + rand () % (rooms[player_room].h * 32 - 64));
+          rg_x = (map.rooms[player_room].x * 32 + 32
+                  + rand () % (map.rooms[player_room].w * 32 - 64));
+          rg_y = (map.rooms[player_room].y * 32 + 32
+                  + rand () % (map.rooms[player_room].h * 32 - 64));
           rg_v = rand () % (lost_gems / 4 + 2);
                   
           CreateGem (rg_x, rg_y, player_room, rg_v);
@@ -167,7 +167,7 @@ play_dungeon(char *fname)
     {
       first_game = 0;
       read_player_data (&save, &player);
-      /* Paint (rooms[0].x+1, rooms[0].y+1, rooms[0].w-2, rooms[0].h-2, "dat/d/fbossroom.loc"); */
+      /* Paint (map.rooms[0].x+1, map.rooms[0].y+1, map.rooms[0].w-2, map.rooms[0].h-2, "dat/d/fbossroom.loc"); */
     }
   else
     {
@@ -184,8 +184,8 @@ play_dungeon(char *fname)
   max_dist = 0;
   for (i = 0; i < NUM_ROOMS; i++)
     {
-      if (rooms[i].s_dist > max_dist)
-        max_dist = rooms[i].s_dist;
+      if (map.rooms[i].s_dist > max_dist)
+        max_dist = map.rooms[i].s_dist;
     }
 	
   game_running = 1;
@@ -218,7 +218,7 @@ play_dungeon(char *fname)
       /* Player moved. */
       if (player_room != prv_player_room) 
         {
-          SetTonedPalette ((float) rooms[player_room].s_dist
+          SetTonedPalette ((float) map.rooms[player_room].s_dist
                            / (float) max_dist);
 
           prv_player_room = player_room;
@@ -227,23 +227,23 @@ play_dungeon(char *fname)
           enter_room_x = player.x;
           enter_room_y = player.y;
 						
-          if (rooms[player_room].room_type == ROOM_BOSS) {
+          if (map.rooms[player_room].room_type == ROOM_BOSS) {
             lock_doors (player_room);
             BossRoom (player_room);
           }
-          if ((rooms[player_room].checkpoint
+          if ((map.rooms[player_room].checkpoint
                || player_room == 0)
               && !artifacts[ART_CURSED_SEAL])
             {
-              checkpoint_x = (rooms[player_room].x * 32
-                              + (rooms[player_room].w / 2 * 32) + 8);
-              checkpoint_y = (rooms[player_room].y * 32
-                              + (rooms[player_room].h / 2 * 32) + 4);
+              checkpoint_x = (map.rooms[player_room].x * 32
+                              + (map.rooms[player_room].w / 2 * 32) + 8);
+              checkpoint_y = (map.rooms[player_room].y * 32
+                              + (map.rooms[player_room].h / 2 * 32) + 4);
             }
 
-          if (rooms[player_room].visited == 0)
+          if (map.rooms[player_room].visited == 0)
             {
-              rooms[player_room].visited = 1;
+              map.rooms[player_room].visited = 1;
               explored++;
             
               /** Place the Agate Knife in the last room if not found yet. */
@@ -256,7 +256,7 @@ play_dungeon(char *fname)
     
       if (last_killed != killed_enemies)
         {
-          SetTonedPalette ((float)rooms[player_room].s_dist / (float)max_dist);
+          SetTonedPalette ((float)map.rooms[player_room].s_dist / (float)max_dist);
           last_killed = killed_enemies;
         }
       else if ((player_room == 0) && (artifacts[ART_CURSED_SEAL] == 1))
@@ -323,10 +323,10 @@ play_dungeon(char *fname)
           if (boss_fight_mode == BSTA_FIGHTING)
             DrawBossHP (100);
 			
-          if ((rooms[player_room].room_type == 5)
-              || (rooms[player_room].room_type == 6
+          if ((map.rooms[player_room].room_type == 5)
+              || (map.rooms[player_room].room_type == 6
                   && current_boss == BOSS_FINAL)
-              || (rooms[player_room].room_type == 4
+              || (map.rooms[player_room].room_type == 4
                   && (player_room % (NUM_ROOMS / NUM_REGULAR_BOSSES)
                       == (NUM_ROOMS / NUM_REGULAR_BOSSES) - 1)))
             DrawPowerObject ();
@@ -341,10 +341,10 @@ play_dungeon(char *fname)
               static float agate_t = 0.0;
               static SDL_Surface *agate_knife = NULL;
 					
-              room_x = rooms[player_room].x * 32 + 32;
-              room_y = rooms[player_room].y * 32 + 32;
-              room_w = rooms[player_room].w * 32 - 64;
-              room_h = rooms[player_room].h * 32 - 64;
+              room_x = map.rooms[player_room].x * 32 + 32;
+              room_y = map.rooms[player_room].y * 32 + 32;
+              room_w = map.rooms[player_room].w * 32 - 64;
+              room_h = map.rooms[player_room].h * 32 - 64;
 					
 
               if (agate_knife == NULL)
@@ -597,20 +597,20 @@ play_dungeon(char *fname)
           && player.hp <= 1)
         can_move = 0;
 
-      if (rooms[player_room].room_type == 5
+      if (map.rooms[player_room].room_type == 5
           && CanGetArtifact ()
           && Get ((player.x + PLAYER_W / 2) / 32,
                   (player.y + PLAYER_H / 2) / 32) == 42
-          && rooms[player_room].enemies == 0)
+          && map.rooms[player_room].enemies == 0)
         can_move = 0;
 						
-      if (rooms[player_room].room_type == 6
+      if (map.rooms[player_room].room_type == 6
           && CanGetArtifact () 
-          && PlayerDist (rooms[player_room].w * 16
-                         + rooms[player_room].x * 32,
-                         rooms[player_room].h * 16
-                         + rooms[player_room].y * 32) < 32
-          && rooms[player_room].enemies == 0
+          && PlayerDist (map.rooms[player_room].w * 16
+                         + map.rooms[player_room].x * 32,
+                         map.rooms[player_room].h * 16
+                         + map.rooms[player_room].y * 32) < 32
+          && map.rooms[player_room].enemies == 0
           && current_boss == BOSS_FINAL)
         can_move = 0;
 					

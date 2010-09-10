@@ -60,7 +60,7 @@ void InitAutomap()
       FullRender();
     } else {
       for (i = 0; i < 3000; i++) {
-        if (rooms[i].visited) {
+        if (map.rooms[i].visited) {
           RecordRoom(i);
         }
       }
@@ -88,7 +88,7 @@ void FullRender()
   }
 	
   for (i = 0; i < NUM_ROOMS; i++) {
-    if (rooms[i].visited) {
+    if (map.rooms[i].visited) {
       RecordRoom(i);
     }
   }
@@ -104,10 +104,10 @@ void DisplayRoom(int room_id, Uint8 room_bg)
   SDL_Rect fill;
   Uint8 *pix;
 
-  for (y = 0; y < rooms[room_id].h; y++) {
-    for (x = 0; x < rooms[room_id].w; x++) {
-      rx = x + rooms[room_id].x;
-      ry = y + rooms[room_id].y;
+  for (y = 0; y < map.rooms[room_id].h; y++) {
+    for (x = 0; x < map.rooms[room_id].w; x++) {
+      rx = x + map.rooms[room_id].x;
+      ry = y + map.rooms[room_id].y;
 			
       pix = automap->pixels;
       pix += automap->w * (ry + 4);
@@ -118,10 +118,10 @@ void DisplayRoom(int room_id, Uint8 room_bg)
     }
   }
 	
-  fill.x = rooms[room_id].x * 200 / 512;
-  fill.y = rooms[room_id].y * 200 / 512;
-  fill.w = rooms[room_id].w * 200 / 512;
-  fill.h = rooms[room_id].h * 200 / 512;
+  fill.x = map.rooms[room_id].x * 200 / 512;
+  fill.y = map.rooms[room_id].y * 200 / 512;
+  fill.w = map.rooms[room_id].w * 200 / 512;
+  fill.h = map.rooms[room_id].h * 200 / 512;
 	
   SDL_FillRect(overview, &fill, 200);
 }
@@ -130,8 +130,8 @@ void RecordRoom(int room_id)
 {
   static int last_player_room = -1;
   if (last_player_room != -1) {
-    if (rooms[last_player_room].checkpoint) DisplayRoom(last_player_room, 150 - (rooms[last_player_room].s_dist/5*12));
-    else DisplayRoom(last_player_room, 192 - (rooms[last_player_room].s_dist/5*12));
+    if (map.rooms[last_player_room].checkpoint) DisplayRoom(last_player_room, 150 - (map.rooms[last_player_room].s_dist/5*12));
+    else DisplayRoom(last_player_room, 192 - (map.rooms[last_player_room].s_dist/5*12));
   }
   last_player_room = room_id;
   DisplayRoom(room_id, 0);
@@ -250,7 +250,7 @@ void DisplayAutomap()
       rx = c_scroll_x / 32 - 27 + x;
       ry = c_scroll_y / 32 - 27 + y;
       if ((rx >= 0)&&(ry >= 0)&&(rx < 512)&&(ry < 512)) {
-        if (rooms[GetRoom(rx, ry)].visited) {
+        if (map.rooms[GetRoom(rx, ry)].visited) {
           tile = Get(rx, ry);
           /* Note: the -1 check is to prevent the checkpoint selector from 
              overflowing and showing the outline of the dungeon in the automap. */

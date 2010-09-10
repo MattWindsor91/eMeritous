@@ -281,38 +281,38 @@ BackgroundMusic (void)
     int new_track = -1;
     Mix_VolumeMusic (96);
 	
-    if (rooms[player_room].s_dist <= 15)
+    if (map.rooms[player_room].s_dist <= 15)
       new_track = BGM_INNER;
 	
     if (bgm_track == BGM_MIDWAY
-        && rooms[player_room].s_dist <= 30
-        && rooms[player_room].s_dist >= 10)
+        && map.rooms[player_room].s_dist <= 30
+        && map.rooms[player_room].s_dist >= 10)
       new_track = BGM_MIDWAY;
       
     if (bgm_track == BGM_OUTER
-        && rooms[player_room].s_dist <= 45
-        && rooms[player_room].s_dist >= 25)
+        && map.rooms[player_room].s_dist <= 45
+        && map.rooms[player_room].s_dist >= 25)
       new_track = BGM_OUTER;
 	
     if (new_track == -1)
       {
-        if (rooms[player_room].s_dist <= 30
-            && rooms[player_room].s_dist >= 16)
+        if (map.rooms[player_room].s_dist <= 30
+            && map.rooms[player_room].s_dist >= 16)
           new_track = BGM_MIDWAY;
-        else if (rooms[player_room].s_dist <= 39
-                 && rooms[player_room].s_dist >= 31)
+        else if (map.rooms[player_room].s_dist <= 39
+                 && map.rooms[player_room].s_dist >= 31)
           new_track = BGM_OUTER;
-        else if (rooms[player_room].s_dist >= 40)
+        else if (map.rooms[player_room].s_dist >= 40)
           new_track = BGM_EDGE;
       }
 	
-    if (rooms[player_room].room_type == ROOM_ART_CHALLENGE)
+    if (map.rooms[player_room].room_type == ROOM_ART_CHALLENGE)
       new_track = BGM_ART_CHALLENGE;
 	
     if (artifacts[ART_CURSED_SEAL])
       new_track = BGM_CURSED_SEAL;
 	
-    if (rooms[player_room].room_type == ROOM_BOSS)
+    if (map.rooms[player_room].room_type == ROOM_BOSS)
       {
         if (boss_fight_mode == BSTA_FIGHTING)
           {

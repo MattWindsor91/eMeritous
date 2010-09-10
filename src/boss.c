@@ -435,19 +435,20 @@ void Curse()
   /* Upon taking the cursed seal:
    * -  Make the place of power your checkpoint */
 	
-  checkpoint_x = rooms[place_of_power].w * 16 + rooms[place_of_power].x * 32;
-  checkpoint_y = rooms[place_of_power].h * 16 + rooms[place_of_power].y * 32;
+  checkpoint_x = map.rooms[place_of_power].w * 16 + map.rooms[place_of_power].x * 32;
+  checkpoint_y = map.rooms[place_of_power].h * 16 + map.rooms[place_of_power].y * 32;
 	
   /* - Turn the start room into a boss room, and clear it */
 	
-  rooms[0].room_type = 2;
-  Paint(rooms[0].x+1, rooms[0].y+1, rooms[0].w-2, rooms[0].h-2, "dat/d/fbossroom.loc");
+  map.rooms[0].room_type = 2;
+  Paint(map.rooms[0].x+1, map.rooms[0].y+1,
+        map.rooms[0].w-2, map.rooms[0].h-2, "dat/d/fbossroom.loc");
 	
   /* - Lock all unvisited rooms off */
 	
   for (i = 0; i < NUM_ROOMS; i++) {
-    if (!rooms[i].visited) {
-      rc = rooms[i].con;
+    if (!map.rooms[i].visited) {
+      rc = map.rooms[i].con;
 			
       while (rc != NULL) {
         x = rc->x2;
@@ -459,8 +460,8 @@ void Curse()
         Put(x, y, tile, GetRoom(x, y));
         rc = rc->n;
       }
-      rooms[i].con = NULL;
-      rooms[i].connections = 0;
+      map.rooms[i].con = NULL;
+      map.rooms[i].connections = 0;
     }
   }
 	
@@ -484,7 +485,7 @@ void DrawPowerObject()
   static int tick = 0;
   static int collect = 0;
 	
-  p_obj = rooms[player_room].room_param;
+  p_obj = map.rooms[player_room].room_param;
 
   if (place_of_power == player_room) p_obj = 3;
 	
@@ -495,20 +496,20 @@ void DrawPowerObject()
 	
   required_enemies = total_enemies * (percent_required[n_artifacts]) / 100;
 	
-  if (rooms[player_room].room_type == 4) required_enemies = 0;
+  if (map.rooms[player_room].room_type == 4) required_enemies = 0;
 
   hover_v = 16;
   off_v = 48;
 	
-  p_x = (rooms[player_room].w * 32 / 2 - 16) + rooms[player_room].x * 32;
+  p_x = (map.rooms[player_room].w * 32 / 2 - 16) + map.rooms[player_room].x * 32;
 	
   if (!game_paused) {
-    if ((rooms[player_room].room_type == 5) || (rooms[player_room].room_type == 6)) {
+    if ((map.rooms[player_room].room_type == 5) || (map.rooms[player_room].room_type == 6)) {
       if (CanGetArtifact()) {
         if ((Get((player.x+PLAYER_W/2)/32, (player.y+PLAYER_H/2)/32)==42) ||
-            (PlayerDist(rooms[player_room].w * 16 + rooms[player_room].x * 32,
-                        rooms[player_room].h * 16 + rooms[player_room].y * 32) < 32)) {
-          if (rooms[player_room].enemies == 0) {
+            (PlayerDist(map.rooms[player_room].w * 16 + map.rooms[player_room].x * 32,
+                        map.rooms[player_room].h * 16 + map.rooms[player_room].y * 32) < 32)) {
+          if (map.rooms[player_room].enemies == 0) {
             off_v = 48 - (collect * 48 / 100);
             hover_v = 16 - (collect * 16 / 100);
 						
@@ -521,7 +522,7 @@ void DrawPowerObject()
             }
             if (collect > 100) {
               collect = 0;
-              rooms[player_room].room_type = 4;
+              map.rooms[player_room].room_type = 4;
               artifacts[ART_HOLY_SWORD + p_obj] = 1;
               specialmessage = 30 + p_obj;
               specialmessagetimer = 120;
@@ -536,7 +537,7 @@ void DrawPowerObject()
     }
   }
 	
-  p_y = (rooms[player_room].h * 32 / 2 - 16) + rooms[player_room].y * 32 - off_v + sin((float)tick / 20.0)*hover_v;
+  p_y = (map.rooms[player_room].h * 32 / 2 - 16) + map.rooms[player_room].y * 32 - off_v + sin((float)tick / 20.0)*hover_v;
 	
   from.x = (8 + p_obj) * 32;
   from.y = 0;
@@ -1306,10 +1307,10 @@ void BC_BossCombat()
           boss_x_bias = 1.33 - ((float)(boss_hp) / 1200.0);
           boss_y_bias = 0.7 + ((float)(boss_hp) / 1500.0);
 					
-          room_x = rooms[player_room].x * 32 + 64;
-          room_y = rooms[player_room].y * 32 + 64;
-          room_w = rooms[player_room].w * 32 - 128;
-          room_h = rooms[player_room].h * 32 - 128;
+          room_x = map.rooms[player_room].x * 32 + 64;
+          room_y = map.rooms[player_room].y * 32 + 64;
+          room_w = map.rooms[player_room].w * 32 - 128;
+          room_h = map.rooms[player_room].h * 32 - 128;
 					
           tmr_t = (float)t / 30.0;
 					
@@ -1561,21 +1562,21 @@ void BC_BossDying()
   static float dr = 0;
 	
   if (current_boss < BOSS_FINAL) {
-    specialmessage = 40 + rooms[player_room].room_param;
+    specialmessage = 40 + map.rooms[player_room].room_param;
     specialmessagetimer = 120;
-    rooms[player_room].room_type = 4;
+    map.rooms[player_room].room_type = 4;
     boss_fight_mode = 0;
     current_boss += 1;
-    artifacts[ART_HOLY_SWORD + rooms[player_room].room_param] = 0;
+    artifacts[ART_HOLY_SWORD + map.rooms[player_room].room_param] = 0;
 		
     CullEnemies(4);
 		
     /* unlock doors */
 		
-    for (y = 0; y < rooms[player_room].h; y++) {
-      for (x = 0; x < rooms[player_room].w; x++) {
-        rx = x + rooms[player_room].x;
-        ry = y + rooms[player_room].y;
+    for (y = 0; y < map.rooms[player_room].h; y++) {
+      for (x = 0; x < map.rooms[player_room].w; x++) {
+        rx = x + map.rooms[player_room].x;
+        ry = y + map.rooms[player_room].y;
         rt = Get(rx, ry);
 				
         if ((rt >= 21) && (rt <= 24)) {
@@ -1683,8 +1684,8 @@ void BC_NewLife()
   if (boss_new_life == 1) {
     circle_size = 0;
     circle_size2 = 128;
-    boss_ox = rooms[current_boss_room].w * 16 + rooms[current_boss_room].x * 32;
-    boss_oy = rooms[current_boss_room].h * 16 + rooms[current_boss_room].y * 32;
+    boss_ox = map.rooms[current_boss_room].w * 16 + map.rooms[current_boss_room].x * 32;
+    boss_oy = map.rooms[current_boss_room].h * 16 + map.rooms[current_boss_room].y * 32;
     boss_new_life = 2;
   } else {
     if (circle_size < 128) {
@@ -1701,8 +1702,8 @@ void BC_NewLife()
       if (circle_size2 == 128) {
         boss_ox = boss_x;
         boss_oy = boss_y;
-        boss_x = rooms[current_boss_room].w * 16 + rooms[current_boss_room].x * 32;
-        boss_y = rooms[current_boss_room].h * 16 + rooms[current_boss_room].y * 32;
+        boss_x = map.rooms[current_boss_room].w * 16 + map.rooms[current_boss_room].x * 32;
+        boss_y = map.rooms[current_boss_room].h * 16 + map.rooms[current_boss_room].y * 32;
         boss_tail_len = 0;
         boss_lives--;
       }
@@ -1805,8 +1806,8 @@ void BossRoom(int room)
 	
   boss_fight_mode = 1;
   current_boss_room = room;
-  boss_x = rooms[room].w * 16 + rooms[room].x * 32;
-  boss_y = rooms[room].h * 16 + rooms[room].y * 32;
+  boss_x = map.rooms[room].w * 16 + map.rooms[room].x * 32;
+  boss_y = map.rooms[room].h * 16 + map.rooms[room].y * 32;
   boss_hp = 1000;
   boss_flash = 0;
   magic_circuit = 0;

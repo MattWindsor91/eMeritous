@@ -31,6 +31,7 @@
 
 #include <SDL.h>
 
+#include "dungeon.h"
 #include "graphics.h"
 #include "screens.h"
 #include "boss.h"
@@ -49,7 +50,6 @@ int DoRepeat = 0;
 int place_of_power = 0;
 
 GameLevel map;
-Room rooms[NUM_ROOMS];
 int total_rooms = 0;
 
 int rdir = 0;
@@ -152,7 +152,7 @@ write_map_data (SaveFile *f)
 
   for (i = 0; i < map.totalRooms; i++)
     {
-      write_room_data (f, &rooms[i]);
+      write_room_data (f, &(map.rooms)[i]);
 
       if ((i % 85) == 84)
         SavingScreen (1, (float)i / (float) map.totalRooms);
@@ -180,7 +180,7 @@ read_map_data (SaveFile *f)
 
   for (i = 0; i < map.totalRooms; i++)
     {
-      read_room_data (f, &rooms[i]);
+      read_room_data (f, &(map.rooms)[i]);
 
       if ((i % 85) == 84)
         LoadingScreen (1, (float)i / (float) map.totalRooms);
@@ -254,7 +254,7 @@ void DestroyDungeon()
 	
   /* Destroy rooms */
   for (i = 0; i < total_rooms; i++) {
-    c = rooms[i].con;
+    c = map.rooms[i].con;
     while (c != NULL) {
       d = c;
       c = c->n;
@@ -322,15 +322,15 @@ void SaveLevel()
         *cs = 0;
 				
       cl = 1;
-      if (rooms[GetRoom(x, y)].room_type == 2) cl = 2;
-      if (rooms[GetRoom(x, y)].room_type == 3) cl = 3;
+      if (map.rooms[GetRoom(x, y)].room_type == 2) cl = 2;
+      if (map.rooms[GetRoom(x, y)].room_type == 3) cl = 3;
 			
       draw_map_text (x * 8, y * 8, cs, cl, map_surf);
     }
   }
   for (i = 0; i < NUM_ROOMS; i++) {
     sprintf(rnum, "%d", i);
-    draw_map_text (rooms[i].x * 8, rooms[i].y * 8, rnum, 0, map_surf);
+    draw_map_text (map.rooms[i].x * 8, map.rooms[i].y * 8, rnum, 0, map_surf);
   }
 	
   SDL_SaveBMP(map_surf, "map.bmp");
@@ -388,7 +388,7 @@ GetVisited (int x, int y)
       || GetRoom (x, y) == -1)
     return 0;
 
-  return rooms[GetRoom (x, y)].visited;
+  return map.rooms[GetRoom (x, y)].visited;
 }
 
 void Paint(int xp, int yp, int w, int h, char *fname)
@@ -572,25 +572,25 @@ void MakeConnect(int x, int y, int type)
   Put(x, y, d1, GetRoom(x, y));
   Put(nx, ny, d2, GetRoom(nx, ny));
 
-  rooms[room_1].connections++;
-  rconnect = rooms[room_1].con;
-  rooms[room_1].con = malloc(sizeof(struct RoomConnection));
-  rooms[room_1].con->n = rconnect;
-  rooms[room_1].con->x = x;
-  rooms[room_1].con->y = y;
-  rooms[room_1].con->x2 = nx;
-  rooms[room_1].con->y2 = ny;
-  rooms[room_1].con->c = room_2;
+  map.rooms[room_1].connections++;
+  rconnect = map.rooms[room_1].con;
+  map.rooms[room_1].con = malloc(sizeof(struct RoomConnection));
+  map.rooms[room_1].con->n = rconnect;
+  map.rooms[room_1].con->x = x;
+  map.rooms[room_1].con->y = y;
+  map.rooms[room_1].con->x2 = nx;
+  map.rooms[room_1].con->y2 = ny;
+  map.rooms[room_1].con->c = room_2;
 	
-  rooms[room_2].connections++;
-  rconnect = rooms[room_2].con;
-  rooms[room_2].con = malloc(sizeof(struct RoomConnection));
-  rooms[room_2].con->n = rconnect;
-  rooms[room_2].con->x = nx;
-  rooms[room_2].con->y = ny;
-  rooms[room_2].con->x2 = x;
-  rooms[room_2].con->y2 = y;
-  rooms[room_2].con->c = room_1;
+  map.rooms[room_2].connections++;
+  rconnect = map.rooms[room_2].con;
+  map.rooms[room_2].con = malloc(sizeof(struct RoomConnection));
+  map.rooms[room_2].con->n = rconnect;
+  map.rooms[room_2].con->x = nx;
+  map.rooms[room_2].con->y = ny;
+  map.rooms[room_2].con->x2 = x;
+  map.rooms[room_2].con->y2 = y;
+  map.rooms[room_2].con->c = room_1;
 
 }
 
@@ -634,30 +634,30 @@ void NewRoom(int place_x, int place_y, int room_w, int room_h, int creator)
   int i;
 	
   /* Draw this room */
-  rooms[total_rooms].checkpoint = 0;
+  map.rooms[total_rooms].checkpoint = 0;
   DrawRoom(place_x, place_y, room_w, room_h, total_rooms);
 	
-  rooms[total_rooms].x = place_x;
-  rooms[total_rooms].y = place_y;
+  map.rooms[total_rooms].x = place_x;
+  map.rooms[total_rooms].y = place_y;
 	
-  rooms[total_rooms].w = room_w;
-  rooms[total_rooms].h = room_h;
+  map.rooms[total_rooms].w = room_w;
+  map.rooms[total_rooms].h = room_h;
 	
-  rooms[total_rooms].room_type = 0;
-  rooms[total_rooms].room_param = 0;
+  map.rooms[total_rooms].room_type = 0;
+  map.rooms[total_rooms].room_param = 0;
 	
-  rooms[total_rooms].creator = creator;
+  map.rooms[total_rooms].creator = creator;
 	
-  rooms[total_rooms].connections = 0;
-  rooms[total_rooms].con = NULL;
-  rooms[total_rooms].enemies = 0;
+  map.rooms[total_rooms].connections = 0;
+  map.rooms[total_rooms].con = NULL;
+  map.rooms[total_rooms].enemies = 0;
 	
-  rooms[total_rooms].visited = 0;
+  map.rooms[total_rooms].visited = 0;
 
-  rooms[total_rooms].s_dist = -1;
+  map.rooms[total_rooms].s_dist = -1;
 	
   if (total_rooms == 0) {
-    rooms[total_rooms].checkpoint = 1;
+    map.rooms[total_rooms].checkpoint = 1;
   }
 	
 	
@@ -728,7 +728,7 @@ void NewRoom(int place_x, int place_y, int room_w, int room_h, int creator)
 
 int AddChild(int room_id)
 {
-  Room r = rooms[room_id];
+  Room r = map.rooms[room_id];
   int place_x = r.x;
   int place_y = r.y;
   int room_w = r.w;
@@ -802,21 +802,21 @@ void RecurseSetDist()
     LoadingScreen(1, 1.0 - ((float)rooms_left / (float)NUM_ROOMS));
   }
 	
-  rooms[0].s_dist = 0;
+  map.rooms[0].s_dist = 0;
 	
   while ((rooms_left > 0)) {	
     c_room = queue[q_bot];
     q_bot++;
     rooms_left--;
 		
-    rc = rooms[c_room].con;
+    rc = map.rooms[c_room].con;
 		
     while (rc != NULL) {
       /* assert(qp < NUM_ROOMS); */
-      if (rooms[rc->c].s_dist == -1) {
+      if (map.rooms[rc->c].s_dist == -1) {
         queue[q_top] = rc->c;
         q_top++;
-        rooms[rc->c].s_dist = rooms[c_room].s_dist+1;
+        map.rooms[rc->c].s_dist = map.rooms[c_room].s_dist+1;
       }
       rc = rc->n;
     }
@@ -825,7 +825,8 @@ void RecurseSetDist()
 
 int RoomSize(int c_room)
 {
-  return sqrt(rooms[c_room].w * rooms[c_room].w + rooms[c_room].h * rooms[c_room].h);
+  return sqrt(map.rooms[c_room].w * map.rooms[c_room].w
+              + map.rooms[c_room].h * map.rooms[c_room].h);
 }
 
 void MakeSpecialRooms()
@@ -857,24 +858,24 @@ void MakeSpecialRooms()
   /* boss rooms */
   for (i = 0; i < NUM_REGULAR_BOSSES; i++) {
     c_room = (((i + 1) * (NUM_ROOMS / NUM_REGULAR_BOSSES)) - 1);
-    rooms[c_room].room_type = 2;
-    rooms[c_room].room_param = i;
+    map.rooms[c_room].room_type = ROOM_BOSS;
+    map.rooms[c_room].room_param = i;
   }
   /* power object rooms */
   for (i = 0; i < NUM_REGULAR_BOSSES; i++) {
     c_room = (((i + 1) * (NUM_ROOMS / NUM_REGULAR_BOSSES)) - 
               (NUM_ROOMS / NUM_REGULAR_BOSSES / 2) - 1);
-    rooms[c_room].room_type = 5;
-    rooms[c_room].room_param = i;
+    map.rooms[c_room].room_type = ROOM_PSI_KEY;
+    map.rooms[c_room].room_param = i;
   }
 	
   /* artifact rooms */
   for (c_tier = 0; c_tier < 8; c_tier++) {
     biggest_room_sz = 0;
     for (c_room = 0; c_room < NUM_ROOMS; c_room++) {
-      if (rooms[c_room].room_type == 0) {
-        if (rooms[c_room].s_dist >= (c_tier*5+5)) {
-          if (rooms[c_room].s_dist <= (c_tier*5+9)) {
+      if (map.rooms[c_room].room_type == 0) {
+        if (map.rooms[c_room].s_dist >= (c_tier*5+5)) {
+          if (map.rooms[c_room].s_dist <= (c_tier*5+9)) {
             if (RoomSize(c_room) > biggest_room_sz) {
               biggest_room_sz = RoomSize(c_room);
               biggest_room_n = c_room;
@@ -883,7 +884,7 @@ void MakeSpecialRooms()
         }
       }
     }
-    rooms[biggest_room_n].room_type = 3;
+    map.rooms[biggest_room_n].room_type = ROOM_ART_CHALLENGE;
 		
     /* pick a # */
     for (;;) {
@@ -894,7 +895,7 @@ void MakeSpecialRooms()
       }
     }
 		
-    rooms[biggest_room_n].room_param = ctyp;
+    map.rooms[biggest_room_n].room_param = ctyp;
 		
     /*printf("Artifact room for tier %d is room %d (size %d), with artifact %d\n", c_tier, biggest_room_n, biggest_room_sz, ctyp); */
   }
@@ -903,14 +904,14 @@ void MakeSpecialRooms()
    * The room with the highest s_dist that is not of any other type */
 	
   for (i = 0; i < NUM_ROOMS; i++) {
-    if (rooms[i].s_dist > rooms[place_of_power].s_dist) {
-      if (rooms[i].room_type == 0) {
+    if (map.rooms[i].s_dist > map.rooms[place_of_power].s_dist) {
+      if (map.rooms[i].room_type == 0) {
         place_of_power = i;
       }
     }
   }
 
-  rooms[place_of_power].room_type = 6;
+  map.rooms[place_of_power].room_type = ROOM_PLACE_OF_POWER;
 	
   /* Now place some checkpoints in the remaining rooms
    * Normally, we would have a checkpoint for every 30
@@ -927,9 +928,9 @@ void MakeSpecialRooms()
         j = GetRoom(rand() % 64 + x * 64, rand() % 64 + y * 64);
                 
         if (j >= 0) {
-          if (rooms[j].room_type == 0) {
-            Put(rooms[j].x + rooms[j].w / 2, rooms[j].y + rooms[j].h / 2, 25, j);
-            rooms[j].checkpoint = 1;
+          if (map.rooms[j].room_type == 0) {
+            Put(map.rooms[j].x + map.rooms[j].w / 2, map.rooms[j].y + map.rooms[j].h / 2, 25, j);
+            map.rooms[j].checkpoint = 1;
             break;
           }
         }
@@ -967,11 +968,11 @@ int Generate()
   RecurseSetDist();
 	
   for (i = 0; i < NUM_ROOMS; i++) {
-    if (rooms[i].s_dist > maxdist) {
-      maxdist = rooms[i].s_dist;
+    if (map.rooms[i].s_dist > maxdist) {
+      maxdist = map.rooms[i].s_dist;
     }
 		
-    if (rooms[i].s_dist >= 50) {
+    if (map.rooms[i].s_dist >= 50) {
       correct_dist = 1;
     }
   }

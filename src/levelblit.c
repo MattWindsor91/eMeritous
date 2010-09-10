@@ -278,12 +278,12 @@ void UpRoom()
 {
   int i, nd;
 	
-  nd = rooms[player_room].s_dist + 1;
+  nd = map.rooms[player_room].s_dist + 1;
 	
   for (i = 0; i < NUM_ROOMS; i++) {
-    if (rooms[i].s_dist == nd) {
-      player.x = rooms[i].x * 32 + 64;
-      player.y = rooms[i].y * 32 + 64;
+    if (map.rooms[i].s_dist == nd) {
+      player.x = map.rooms[i].x * 32 + 64;
+      player.y = map.rooms[i].y * 32 + 64;
     }
   }
 }
@@ -421,10 +421,10 @@ HandleEvents(void)
                 for (j = 0; j < 1; j++) {
                 for (i = 0; i < 50000; i++) {
                 n = rand()%3000;
-                if (rooms[n].visited == 0) {
-                player.x = rooms[n].x * 32 + rooms[n].w * 16;
-                player.y = rooms[n].y * 32 + rooms[n].h * 16;
-                rooms[n].visited = 1;
+                if (map.rooms[n].visited == 0) {
+                player.x = map.rooms[n].x * 32 + map.rooms[n].w * 16;
+                player.y = map.rooms[n].y * 32 + map.rooms[n].h * 16;
+                map.rooms[n].visited = 1;
                 explored++;
                 break;
                 }
@@ -629,7 +629,7 @@ void SetTonedPalette(float dct)
   int i;
   static int tk = 0;
 	
-  ec = rooms[player_room].enemies;
+  ec = map.rooms[player_room].enemies;
 	
   if (ec < 50) {
     rp_dct = (float)ec / 50.0;
@@ -725,23 +725,23 @@ void ActivateBossDoor(int x, int y)
   int bx = x, by = y;
 	
   /* find boss room */
-  if (rooms[GetRoom(x+1, y)].room_type == ROOM_BOSS) {
+  if (map.rooms[GetRoom(x+1, y)].room_type == ROOM_BOSS) {
     bx += 1;
-  } else if (rooms[GetRoom(x-1, y)].room_type == ROOM_BOSS) {
+  } else if (map.rooms[GetRoom(x-1, y)].room_type == ROOM_BOSS) {
     bx -= 1;
-  } else if (rooms[GetRoom(x, y+1)].room_type == ROOM_BOSS) {
+  } else if (map.rooms[GetRoom(x, y+1)].room_type == ROOM_BOSS) {
     by += 1;
-  } else if (rooms[GetRoom(x, y-1)].room_type == ROOM_BOSS) {
+  } else if (map.rooms[GetRoom(x, y-1)].room_type == ROOM_BOSS) {
     by -= 1;
   } else {
     return;
   }
 	
-  if (artifacts[ART_HOLY_SWORD + rooms[GetRoom(bx, by)].room_param]) {
+  if (artifacts[ART_HOLY_SWORD + map.rooms[GetRoom(bx, by)].room_param]) {
     opening_door_x = x;
     opening_door_y = y;
     opening_door_i = 1;
-    opening_door_n = rooms[GetRoom(bx, by)].room_param;
+    opening_door_n = map.rooms[GetRoom(bx, by)].room_param;
     if ((SDL_GetTicks() - bd_timer) > 100) {
       play_positioned_sound("dat/a/crystal2.wav", 100, 0);
       bd_timer = SDL_GetTicks();
@@ -804,11 +804,11 @@ int TouchTile(int ix, int iy)
 
 void ActivateRoom(int room)
 {
-  /*printf("Activating room %d (type %d)\n", room, rooms[room].room_type);*/
-  if (rooms[room].checkpoint) {
+  /*printf("Activating room %d (type %d)\n", room, map.rooms[room].room_type);*/
+  if (map.rooms[room].checkpoint) {
     checkpoints_found++;
   }
-  if (rooms[room].room_type == ROOM_ART_CHALLENGE) {
+  if (map.rooms[room].room_type == ROOM_ART_CHALLENGE) {
     /* lock the doors!*/
     lock_doors(room);
   }
@@ -956,7 +956,7 @@ void RoomTreasure(int room, int typ)
 	
   if (typ == 0) {
     /* Treasure */
-    treasure = rooms[room].room_param;
+    treasure = map.rooms[room].room_param;
     artifacts[treasure] = 1;
     specialmessage = treasure + 1;
     specialmessagetimer = 30;
@@ -970,7 +970,7 @@ void RoomTreasure(int room, int typ)
       switch (treasure) {
       case 0:
         specialmessage = 20;
-        player.crystals += rand()%((1 << (rooms[room].s_dist / 7)) * 1500);
+        player.crystals += rand()%((1 << (map.rooms[room].s_dist / 7)) * 1500);
         given_treasure = 1;
         play_positioned_sound("dat/a/tone.wav", 128, 0);
         break;
@@ -1018,7 +1018,7 @@ int GetNearestCheckpoint(int nx, int ny)
   i = GetRoom(nx/32, ny/32);
   if (i != -1) {
     room_chk[i] = 1;
-    if ((rooms[i].checkpoint != 0)&&(rooms[i].visited!=0)) {
+    if ((map.rooms[i].checkpoint != 0)&&(map.rooms[i].visited!=0)) {
       nearest_checkpoint = i;
     }
   }
@@ -1033,9 +1033,9 @@ int GetNearestCheckpoint(int nx, int ny)
         if (i != -1) {
           if (room_chk[i] == 0) {
             room_chk[i] = 1;
-            if ((rooms[i].checkpoint != 0)&&(rooms[i].visited!=0)) {
-              cp_x = rooms[i].x * 32 + rooms[i].w * 16;
-              cp_y = rooms[i].y * 32 + rooms[i].h * 16;
+            if ((map.rooms[i].checkpoint != 0)&&(map.rooms[i].visited!=0)) {
+              cp_x = map.rooms[i].x * 32 + map.rooms[i].w * 16;
+              cp_y = map.rooms[i].y * 32 + map.rooms[i].h * 16;
               cp_dist = dist(cp_x, cp_y, nx, ny);
               if (cp_dist < nearest_dist) {
                 nearest_dist = cp_dist;
@@ -1060,8 +1060,8 @@ void TeleportPlayerToRoom(int c_room)
     player.x = 8232;
     player.y = 8108;
   } else {
-    player.x = rooms[c_room].x * 32 + (rooms[c_room].w / 2 * 32) + 8;
-    player.y = rooms[c_room].y * 32 + (rooms[c_room].h / 2 * 32) + 4;
+    player.x = map.rooms[c_room].x * 32 + (map.rooms[c_room].w / 2 * 32) + 8;
+    player.y = map.rooms[c_room].y * 32 + (map.rooms[c_room].h / 2 * 32) + 4;
   }
   c_scroll_x = player.x;
   c_scroll_y = player.y;
@@ -1073,7 +1073,7 @@ void TeleportPlayerToNextRoom()
 {
   int c_room;
   c_room = (player_room + 1) % NUM_ROOMS;
-  while (! ((rooms[c_room].checkpoint!=0)&&(rooms[c_room].visited!=0))) {
+  while (! ((map.rooms[c_room].checkpoint!=0)&&(map.rooms[c_room].visited!=0))) {
     c_room = (c_room + 1) % NUM_ROOMS;
   }
 	
@@ -1081,8 +1081,8 @@ void TeleportPlayerToNextRoom()
     player.x = 8232;
     player.y = 8108;
   } else {
-    player.x = rooms[c_room].x * 32 + (rooms[c_room].w / 2 * 32) + 8;
-    player.y = rooms[c_room].y * 32 + (rooms[c_room].h / 2 * 32) + 4;
+    player.x = map.rooms[c_room].x * 32 + (map.rooms[c_room].w / 2 * 32) + 8;
+    player.y = map.rooms[c_room].y * 32 + (map.rooms[c_room].h / 2 * 32) + 4;
   }
   c_scroll_x = player.x;
   c_scroll_y = player.y;
@@ -1199,12 +1199,12 @@ void CompassPoint()
       /* Has the player got this artifact already? */
       if (artifacts[ART_HOLY_SWORD + i] == 0) {
         /* No - has the player already destroyed the boss? */
-        if (rooms[boss_room].room_type == ROOM_BOSS) {
+        if (map.rooms[boss_room].room_type == ROOM_BOSS) {
           /* No - can the player get the artifact? */
           if (CanGetArtifact()) {
             /* Point player to this artifact room, if it is the nearest */
-            loc_x = rooms[artifact_room].x * 32 + rooms[artifact_room].w * 16;
-            loc_y = rooms[artifact_room].y * 32 + rooms[artifact_room].h * 16;
+            loc_x = map.rooms[artifact_room].x * 32 + map.rooms[artifact_room].w * 16;
+            loc_y = map.rooms[artifact_room].y * 32 + map.rooms[artifact_room].h * 16;
             cdist = dist(rplx, rply, loc_x, loc_y);
             if (cdist < nearest) {
               nearest = cdist;
@@ -1214,10 +1214,10 @@ void CompassPoint()
         }
       } else {
         /* Yes, has artifact - Has the player already destroyed the boss? */
-        if (rooms[boss_room].room_type == ROOM_BOSS) {
+        if (map.rooms[boss_room].room_type == ROOM_BOSS) {
           /* No - Point player to the boss room, if it is the nearest */
-          loc_x = rooms[boss_room].x * 32 + rooms[i * 1000 + 999].w * 16;
-          loc_y = rooms[boss_room].y * 32 + rooms[i * 1000 + 999].h * 16;
+          loc_x = map.rooms[boss_room].x * 32 + map.rooms[i * 1000 + 999].w * 16;
+          loc_y = map.rooms[boss_room].y * 32 + map.rooms[i * 1000 + 999].h * 16;
           cdist = dist(rplx, rply, loc_x, loc_y);
           if (cdist < nearest) {
             nearest = cdist;
@@ -1235,8 +1235,8 @@ void CompassPoint()
   if (bosses_defeated == NUM_REGULAR_BOSSES) {
     /* If the player already has the seal, point them to home */
     if (artifacts[ART_CURSED_SEAL] == 1) {
-      loc_x = rooms[0].x * 32 + rooms[0].w * 16;
-      loc_y = rooms[0].y * 32 + rooms[0].h * 16;
+      loc_x = map.rooms[0].x * 32 + map.rooms[0].w * 16;
+      loc_y = map.rooms[0].y * 32 + map.rooms[0].h * 16;
       cdist = dist(rplx, rply, loc_x, loc_y);
       if (cdist < nearest) {
         nearest = cdist;
@@ -1245,8 +1245,8 @@ void CompassPoint()
     } else {
       /* Can the player touch the seal? */
       if (CanGetArtifact()) {
-        loc_x = rooms[place_of_power].x * 32 + rooms[place_of_power].w * 16;
-        loc_y = rooms[place_of_power].y * 32 + rooms[place_of_power].h * 16;
+        loc_x = map.rooms[place_of_power].x * 32 + map.rooms[place_of_power].w * 16;
+        loc_y = map.rooms[place_of_power].y * 32 + map.rooms[place_of_power].h * 16;
         cdist = dist(rplx, rply, loc_x, loc_y);
         if (cdist < nearest) {
           nearest = cdist;
@@ -1259,8 +1259,8 @@ void CompassPoint()
   /* Did we find a room? If so, point to it */
 	
   if (n_room != -1) {
-    loc_x = rooms[n_room].x * 32 + rooms[n_room].w * 16;
-    loc_y = rooms[n_room].y * 32 + rooms[n_room].h * 16;
+    loc_x = map.rooms[n_room].x * 32 + map.rooms[n_room].w * 16;
+    loc_y = map.rooms[n_room].y * 32 + map.rooms[n_room].h * 16;
 	
     pdir_1 = PlayerDir(loc_x, loc_y) + M_PI;
     pdir_1t = 1;
@@ -1271,9 +1271,9 @@ void CompassPoint()
   nearest = 1000000;
   /* Find the nearest uncleared artifact room */
   for (i = 0; i < NUM_ROOMS; i++) {
-    if (rooms[i].room_type == 3) {
-      loc_x = rooms[i].x * 32 + rooms[i].w * 16;
-      loc_y = rooms[i].y * 32 + rooms[i].h * 16;
+    if (map.rooms[i].room_type == 3) {
+      loc_x = map.rooms[i].x * 32 + map.rooms[i].w * 16;
+      loc_y = map.rooms[i].y * 32 + map.rooms[i].h * 16;
       cdist = dist(rplx, rply, loc_x, loc_y);
       if (cdist < nearest) {
         nearest = cdist;
@@ -1283,8 +1283,8 @@ void CompassPoint()
   }
 	
   if (n_room != -1) {
-    loc_x = rooms[n_room].x * 32 + rooms[n_room].w * 16;
-    loc_y = rooms[n_room].y * 32 + rooms[n_room].h * 16;
+    loc_x = map.rooms[n_room].x * 32 + map.rooms[n_room].w * 16;
+    loc_y = map.rooms[n_room].y * 32 + map.rooms[n_room].h * 16;
 	
     pdir_2 = PlayerDir(loc_x, loc_y) + M_PI;
     pdir_2t = 1;
@@ -1384,8 +1384,8 @@ void SpecialTile(int x, int y)
     }
     break;
   case 42:
-    if (rooms[player_room].room_type == 5) {
-      if (CanGetArtifact(rooms[player_room].room_param)) {
+    if (map.rooms[player_room].room_type == 5) {
+      if (CanGetArtifact(map.rooms[player_room].room_param)) {
 					
       } else {
         sprintf(message, "The artifact is tainted with shadow. You must slay more of the shadow first.");
