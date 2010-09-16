@@ -138,6 +138,8 @@ int main(int argc, const char **argv)
   SDL_WM_SetIcon (wm_icon, wm_mask);
   InitAudio ();
 	
+
+  gfx_init ();
   text_init ();
 	       
   SetGreyscalePalette ();

@@ -1708,20 +1708,24 @@ void DrawEnemy(struct enemy *e, SDL_Surface *scr)
   SDL_Rect draw_pos;
   SDL_Rect surf_pos;
   static SDL_Surface *teleflash = NULL;
-	
-  if (e->delete_me) return;
+
+
+  if (e->delete_me)
+    return;                  
+
   draw_pos.x = e->x - e->image->h/2/e->lives - scroll_x;
   draw_pos.y = e->y - e->image->h/2/e->lives - scroll_y;
 
   surf_pos.x = e->blit_pos;
-  surf_pos.y =  e->image->h/e->lives*e->deaths;
-  surf_pos.w = e->image->h/e->lives;
-  surf_pos.h = e->image->h/e->lives;
+  surf_pos.y = e->image->h/e->lives*e->deaths;
+
+  draw_pos.w = surf_pos.w = e->image->h/e->lives;
+  draw_pos.h = surf_pos.h = e->image->h/e->lives;
 	
   if (e->teleport_v < 8) {
 	
     if (e->dying == 0) {
-      SDL_BlitSurface(e->image, &surf_pos, scr, &draw_pos);
+      dirty_blit (e->image, &surf_pos, scr, &draw_pos);
     } else {
       if ((e->deaths+1) >= e->lives) {
         surf_pos.w = e->image->h/e->lives * (20 - e->dying) / 20;
@@ -1738,7 +1742,7 @@ void DrawEnemy(struct enemy *e, SDL_Surface *scr)
         draw_pos.x += (e->image->h/e->lives - surf_pos.w)/2;
         draw_pos.y += (e->image->h/e->lives - surf_pos.w)/2;		
       }
-      SDL_BlitSurface(e->image, &surf_pos, scr, &draw_pos);
+      dirty_blit(e->image, &surf_pos, scr, &draw_pos);
     }
 	
     if (((e->t % 8) == 1) && (!game_paused)) {
@@ -1752,7 +1756,7 @@ void DrawEnemy(struct enemy *e, SDL_Surface *scr)
     draw_pos.y -= (128-e->image->h/e->lives)/2;
 	
     if (magic_circuit >= e->str) {
-      SDL_BlitSurface(reticle, NULL, scr, &draw_pos);
+      dirty_blit(reticle, NULL, scr, &draw_pos);
     }
 		
     draw_pos.x = e->x - e->image->h/e->lives/2 - scroll_x;
@@ -1762,7 +1766,7 @@ void DrawEnemy(struct enemy *e, SDL_Surface *scr)
     draw_pos.y -= (128-e->image->h/e->lives)/2;
 	
     if (sqrt(sqr(e->x - player.x) + sqr(e->y - player.y)) < circuit_range) {
-      SDL_BlitSurface(inrange, NULL, scr, &draw_pos);
+      dirty_blit(inrange, NULL, scr, &draw_pos);
     }
   }
 	
@@ -1779,7 +1783,7 @@ void DrawEnemy(struct enemy *e, SDL_Surface *scr)
 		
     draw_pos.x = e->x - 24 - scroll_x;
     draw_pos.y = e->y - 24 - scroll_y;
-    SDL_BlitSurface(teleflash, &surf_pos, scr, &draw_pos);
+    dirty_blit (teleflash, &surf_pos, scr, &draw_pos);
   }
 }
 
@@ -1999,6 +2003,8 @@ void DrawBullet(struct bullet *b)
       }
     }
   }
+
+  mark_dirty_rect (b->x - scroll_x, b->y - scroll_y, TILE_W, TILE_H);
 }
 
 void DrawGem(struct diamond *g)
@@ -2032,7 +2038,7 @@ void DrawGem(struct diamond *g)
     draw_pos.w = 8;
     draw_pos.h = 8;
 	
-    SDL_BlitSurface(d_sprite, &draw_pos, screen, &surf_pos);
+    dirty_blit(d_sprite, &draw_pos, screen, &surf_pos);
   } else {
     DrawCircle(g->x - scroll_x, g->y - scroll_y, 6, (rand()%64) ^ fxp);
     draw_text(g->x - 4 - scroll_x, g->y - 4 - scroll_y, hp_icon, (200+rand()%56) ^ fxp);
@@ -2046,7 +2052,7 @@ void DrawInvisible(int x, int y)
   SDL_Rect dest;
   dest.x = x - scroll_x - 24;
   dest.y = y - scroll_y - 24;
-  SDL_BlitSurface(invis_enemy, NULL, screen, &dest);
+  dirty_blit (invis_enemy, NULL, screen, &dest);
 }
 
 void DrawEntities()

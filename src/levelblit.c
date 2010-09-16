@@ -150,6 +150,8 @@ void VideoUpdate()
     }
     bmp++;
   }
+
+  clear_dirty_list();
 }
 
 void EndCycle(int n)
@@ -565,14 +567,22 @@ void
 DrawLevel (int off_x, int off_y, int hide_not_visited, int fog_of_war)
 {
   int x, y;
+  static int prev_scroll_x = 0, prev_scroll_y = 0;
 	
-  DrawRect (0, 0, SCREEN_W, SCREEN_H, BG_COLOUR);
+  if (prev_scroll_x != scroll_x 
+      || prev_scroll_y != scroll_y)
+    DrawRect (0, 0, SCREEN_W, SCREEN_H, BG_COLOUR);
 	
   for (y = 0; y < 16; y++) {
     for (x = 0; x < 21; x++) {
-      DrawTile(x, y, off_x, off_y, hide_not_visited, fog_of_war);
+      if (was_dirty (x, y) || prev_scroll_x != scroll_x || 
+          prev_scroll_y != scroll_y)
+          DrawTile(x, y, off_x, off_y, hide_not_visited, fog_of_war);
     }
   }
+
+  prev_scroll_x = scroll_x;
+  prev_scroll_y = scroll_y;
 }
 
 void DrawPlayer(int x, int y, int pl_dir, int pl_frm)
@@ -592,8 +602,10 @@ void DrawPlayer(int x, int y, int pl_dir, int pl_frm)
 	
   screenrec.x = x;
   screenrec.y = y;
+  screenrec.w = PLAYER_W;
+  screenrec.h = PLAYER_H;
 	
-  SDL_BlitSurface(playersprite, &playerrec, screen, &screenrec);
+  dirty_blit(playersprite, &playerrec, screen, &screenrec);
 }
 
 void SetGreyscalePalette(void)

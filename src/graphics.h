@@ -78,4 +78,25 @@ draw_text (int x, int y, const char *str, Uint8 tcol);
 void
 draw_map_text (int x, int y, const char *str, Uint8 tcol, SDL_Surface *srf);
 
+
+/** FIXME: Document these better. */
+
+
+/* Perform a blit of a sprite, ensuring the dirty rectangles are handled. */
+
+void
+dirty_blit (SDL_Surface *source, SDL_Rect *sourcerect, 
+            SDL_Surface *destination, SDL_Rect *destinationrect);
+
+/** Mark a rectangle on-screen as being dirty. */
+
+void
+mark_dirty_rect (int rect_x, int rect_y, int rect_w, int rect_h);
+
+int
+was_dirty (int x, int y);
+
+void
+clear_dirty_list (void);
+
 #endif /* __GRAPHICS_H__ */

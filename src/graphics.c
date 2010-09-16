@@ -24,6 +24,7 @@
 #include <stdlib.h>
 
 #include "graphics.h"
+#include "levelblit.h"
 
 /* Graphics globals. */
 
@@ -32,6 +33,17 @@ SDL_Surface *screen; /**< The main video screen. */
 /* Graphics statics. */
 
 static unsigned char font_data[NUM_CHARS][CHAR_W][CHAR_H]; /**< The font bitmap. */
+static unsigned char dirty_list[22][17]; /** List of tiles to update. */
+static unsigned char prev_dirty_list[22][17]; /** List of tiles updated last frame. */
+
+void
+gfx_init (void)
+{
+  memset (dirty_list, 0, 22 * 17);
+  memset (prev_dirty_list, 1, 22 * 17);
+  scroll_x = 0;
+  scroll_y = 0;
+}
 
 /* Initialise the text font. */
 void
@@ -151,4 +163,90 @@ draw_map_text (int x, int y, const char *str, Uint8 tcol,
           cur_x += CHAR_H;
         }
     }
+}
+
+void
+mark_dirty_rect (int rect_x, int rect_y, int rect_w, int rect_h)
+{
+  int start_x, start_y;
+  int end_x, end_y;
+  int x, y;
+
+  /* De-translate x and y. */
+
+  start_x = ((rect_x + (scroll_x % TILE_W))
+             / TILE_W);
+  start_y = ((rect_y + (scroll_y % TILE_H))
+             / TILE_H);
+
+  end_x = ((rect_x + rect_w + (scroll_x % TILE_W))
+           / TILE_W);
+  end_y = ((rect_y + rect_h + (scroll_y % TILE_H))
+           / TILE_H);
+
+  /* Bound the X and Y. */
+
+  if (start_x < 0)
+    start_x = 0;
+
+  if (start_y < 0)
+    start_y = 0;
+
+  if (start_x > 21)
+    start_x = 21;
+ 
+  if (start_y > 16)
+    start_y = 16;
+
+  if (end_x < 0)
+    end_x = 0;
+
+  if (start_y < 0)
+    end_y = 0;
+
+  if (start_x > 21)
+    end_x = 21;
+ 
+  if (start_y > 16)
+    end_y = 16;
+
+  /* Check to see if tiles are in dirty list. */
+ 
+
+  for (x = start_x; x <= end_x; x++)
+    {
+      for (y = start_y; y <= end_y; y++)
+        {
+          if (dirty_list[x][y] == 0)
+            {
+              dirty_list[x][y] = 1;
+              DrawTile(x, y, scroll_x, scroll_y, 1, 1);
+            }
+        }
+    }
+}
+
+void
+dirty_blit (SDL_Surface *source, SDL_Rect *sourcerect, 
+            SDL_Surface *destination, SDL_Rect *destinationrect)
+{
+  mark_dirty_rect (destinationrect->x, 
+                   destinationrect->y,
+                   destinationrect->w,
+                   destinationrect->h);
+
+  SDL_BlitSurface(source, sourcerect, destination, destinationrect);
+}
+
+int
+was_dirty (int x, int y)
+{
+  return prev_dirty_list[x][y];
+}
+
+void
+clear_dirty_list (void)
+{
+  memcpy (prev_dirty_list, dirty_list, sizeof (dirty_list));
+  memset (dirty_list, 0, sizeof (dirty_list));
 }
